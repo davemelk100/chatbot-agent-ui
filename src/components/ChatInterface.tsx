@@ -8,12 +8,16 @@ import {
   Flex,
   IconButton,
   Heading,
+  Switch,
+  FormControl,
+  FormLabel,
+  Select,
 } from "@chakra-ui/react";
 import { ChatIcon } from "@chakra-ui/icons";
 import OpenAI from "openai";
 
 interface Message {
-  role: "user" | "assistant";
+  role: "user" | "assistant" | "third";
   content: string;
 }
 
@@ -21,12 +25,90 @@ interface ChatInterfaceProps {
   threadId: number;
 }
 
+type LLMModel = "gpt-3.5-turbo" | "gpt-4" | "gpt-4-turbo";
+
 export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isThirdPersonEnabled, setIsThirdPersonEnabled] = useState(false);
+  const [selectedModel, setSelectedModel] = useState<LLMModel>("gpt-3.5-turbo");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const toast = useToast();
+
+  const isThreadOne = threadId === 0;
+  const isThreadTwo = threadId === 1;
+  const isThreadThree = threadId === 2;
+  const isThreadFour = threadId === 3;
+
+  const getThreadStyle = () => {
+    if (isThreadOne) {
+      return { fontFamily: "'Poppins', sans-serif", fontWeight: "500" };
+    }
+    if (isThreadTwo) {
+      return {
+        fontFamily: "'Anek Gurmukhi', sans-serif",
+        fontWeight: "500",
+        fontSize: "lg",
+      };
+    }
+    if (isThreadThree) {
+      return {
+        fontFamily: "'DM Sans', sans-serif",
+        fontWeight: "500",
+      };
+    }
+    return {};
+  };
+
+  const threadStyle = getThreadStyle();
+
+  const getThreadColors = () => {
+    if (isThreadTwo) {
+      return {
+        bg: "orange.50",
+        userBg: "orange.600",
+        assistantBg: "orange.100",
+        thirdBg: "orange.300",
+        borderColor: "orange.200",
+        buttonColor: "orange",
+        textColor: "orange.700",
+      };
+    }
+    if (isThreadThree) {
+      return {
+        bg: "green.50",
+        userBg: "green.500",
+        assistantBg: "green.100",
+        thirdBg: "green.300",
+        borderColor: "green.200",
+        buttonColor: "green",
+        textColor: "green.700",
+      };
+    }
+    if (isThreadFour) {
+      return {
+        bg: "gray.50",
+        userBg: "gray.600",
+        assistantBg: "gray.100",
+        thirdBg: "gray.300",
+        borderColor: "gray.300",
+        buttonColor: "gray",
+        textColor: "gray.700",
+      };
+    }
+    return {
+      bg: "white",
+      userBg: "blue.500",
+      assistantBg: "gray.100",
+      thirdBg: "blue.300",
+      borderColor: "gray.200",
+      buttonColor: "blue",
+      textColor: undefined,
+    };
+  };
+
+  const colors = getThreadColors();
 
   const openai = new OpenAI({
     apiKey: import.meta.env.VITE_OPENAI_API_KEY,
@@ -58,13 +140,15 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
               threadId + 1
             }. Keep your responses concise and friendly.`,
           },
-          ...messages.map((msg) => ({
-            role: msg.role,
-            content: msg.content,
-          })),
+          ...messages
+            .filter((msg) => msg.role !== "third")
+            .map((msg) => ({
+              role: msg.role as "user" | "assistant",
+              content: msg.content,
+            })),
           { role: "user", content: input },
         ],
-        model: "gpt-3.5-turbo",
+        model: isThreadTwo ? selectedModel : "gpt-3.5-turbo",
       });
 
       const assistantMessage: Message = {
@@ -73,6 +157,17 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
+
+      // If third person is enabled, add their response
+      if (isThreadOne && isThirdPersonEnabled) {
+        const thirdPersonMessage: Message = {
+          role: "third",
+          content: `As a third person, I'd like to add: ${
+            completion.choices[0].message.content || ""
+          }`,
+        };
+        setMessages((prev) => [...prev, thirdPersonMessage]);
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -89,33 +184,92 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
   return (
     <Box
       w="100%"
-      h="60vh"
-      bg="white"
-      borderRadius="lg"
+      h={{ base: "60vh", md: "75vh" }}
+      bg={colors.bg}
+      borderRadius={isThreadThree ? "0" : "lg"}
       boxShadow="md"
       overflow="hidden"
       display="flex"
       flexDirection="column"
     >
-      <Box p={4} borderBottom="1px" borderColor="gray.200">
-        <Heading size="sm">Chat Thread {threadId + 1}</Heading>
+      <Box
+        p={{ base: 3, md: 4 }}
+        borderBottom="1px"
+        borderColor={colors.borderColor}
+        bg={isThreadThree ? colors.textColor : undefined}
+      >
+        <Flex justify="space-between" align="center">
+          <Heading
+            size={{ base: "sm", md: isThreadTwo ? "md" : "sm" }}
+            {...threadStyle}
+            color={isThreadThree ? colors.bg : colors.textColor}
+          >
+            Chatbot {threadId + 1}
+          </Heading>
+          <Flex gap={4} align="center">
+            {isThreadOne && (
+              <FormControl display="flex" alignItems="center" w="auto">
+                <FormLabel htmlFor="third-person" mb="0" fontSize="sm">
+                  Third Person
+                </FormLabel>
+                <Switch
+                  id="third-person"
+                  isChecked={isThirdPersonEnabled}
+                  onChange={(e) => setIsThirdPersonEnabled(e.target.checked)}
+                  colorScheme="blue"
+                  size="sm"
+                />
+              </FormControl>
+            )}
+            {isThreadTwo && (
+              <FormControl w="auto">
+                <Select
+                  size="sm"
+                  value={selectedModel}
+                  onChange={(e) => setSelectedModel(e.target.value as LLMModel)}
+                  bg={colors.bg}
+                  color={colors.textColor}
+                  borderColor={colors.borderColor}
+                >
+                  <option value="gpt-3.5-turbo">GPT-3.5</option>
+                  <option value="gpt-4">GPT-4</option>
+                  <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                </Select>
+              </FormControl>
+            )}
+          </Flex>
+        </Flex>
       </Box>
-      <Box flex="1" overflowY="auto" p={4}>
-        <VStack spacing={4} align="stretch">
+      <Box flex="1" overflowY="auto" p={{ base: 3, md: 4 }}>
+        <VStack spacing={{ base: 4, md: 5 }} align="stretch">
           {messages.map((message, index) => (
             <Flex
               key={index}
-              justify={message.role === "user" ? "flex-end" : "flex-start"}
+              justify={
+                message.role === "user"
+                  ? "flex-end"
+                  : message.role === "third"
+                  ? "center"
+                  : "flex-start"
+              }
             >
               <Box
-                maxW="70%"
-                bg={message.role === "user" ? "blue.500" : "gray.100"}
+                maxW={{ base: "85%", md: "75%" }}
+                bg={
+                  message.role === "user"
+                    ? colors.userBg
+                    : message.role === "third"
+                    ? colors.thirdBg
+                    : colors.assistantBg
+                }
                 color={message.role === "user" ? "white" : "black"}
-                p={3}
-                borderRadius="lg"
+                p={{ base: 3, md: 4 }}
+                borderRadius={isThreadThree ? "0" : "lg"}
                 boxShadow="sm"
               >
-                <Text>{message.content}</Text>
+                <Text {...threadStyle} fontSize={{ base: "sm", md: "md" }}>
+                  {message.content}
+                </Text>
               </Box>
             </Flex>
           ))}
@@ -123,7 +277,11 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
         </VStack>
       </Box>
 
-      <Box p={4} borderTop="1px" borderColor="gray.200">
+      <Box
+        p={{ base: 3, md: 4 }}
+        borderTop={isThreadFour ? "0" : "1px"}
+        borderColor={colors.borderColor}
+      >
         <Flex>
           <Input
             value={input}
@@ -135,13 +293,29 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
                 handleSendMessage();
               }
             }}
+            {...threadStyle}
+            fontSize={{ base: "sm", md: "md" }}
+            bg={
+              isThreadTwo
+                ? "purple.50"
+                : isThreadThree
+                ? "green.50"
+                : isThreadFour
+                ? "gray.50"
+                : "white"
+            }
+            borderColor={colors.borderColor}
+            borderRadius={isThreadThree ? "0" : "md"}
+            _hover={{ borderColor: colors.borderColor }}
+            _focus={{ borderColor: colors.borderColor }}
           />
           <IconButton
             aria-label="Send message"
             icon={<ChatIcon />}
-            colorScheme="blue"
+            colorScheme={colors.buttonColor}
             onClick={handleSendMessage}
             isLoading={isLoading}
+            size={{ base: "sm", md: "md" }}
           />
         </Flex>
       </Box>

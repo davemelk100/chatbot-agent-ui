@@ -4,21 +4,41 @@ import {
   Container,
   Grid,
   Heading,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { ChatInterface } from "./components/ChatInterface";
 
 function App() {
+  const bgColor = useColorModeValue("gray.50", "gray.900");
+  const textColor = useColorModeValue("gray.800", "white");
+
   return (
     <ChakraProvider>
-      <Box minH="100vh" bg="gray.50" py={8}>
-        <Box px={4}>
-          <Heading mb={6} textAlign="center">
-            Multi-Chat Interface
+      <Box minH="100vh" bg={bgColor} p={{ base: 4, md: 8 }}>
+        <Box maxW="1600px" mx="auto">
+          <Heading
+            as="h1"
+            size={{ base: "lg", md: "xl" }}
+            mb={{ base: 6, md: 8 }}
+            color={textColor}
+            fontFamily="'Avenir', sans-serif"
+            fontWeight="500"
+            textAlign="left"
+          >
+            Agent UI Interfaces
           </Heading>
-          <Grid templateColumns="repeat(6, 1fr)" gap={4} w="100%">
-            {[...Array(6)].map((_, index) => (
-              <Box key={index} h="full">
-                <ChatInterface threadId={index} />
+          <Grid
+            templateColumns={{
+              base: "1fr",
+              sm: "repeat(2, 1fr)",
+              lg: "repeat(2, 1fr)",
+              xl: "repeat(4, 1fr)",
+            }}
+            gap={{ base: 4, md: 6 }}
+          >
+            {[0, 1, 2, 3].map((threadId) => (
+              <Box key={threadId}>
+                <ChatInterface threadId={threadId} />
               </Box>
             ))}
           </Grid>
