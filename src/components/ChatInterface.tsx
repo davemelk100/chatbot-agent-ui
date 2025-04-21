@@ -12,13 +12,16 @@ import {
   FormControl,
   FormLabel,
   Select,
+  HStack,
 } from "@chakra-ui/react";
-import { ChatIcon } from "@chakra-ui/icons";
+import { ChatIcon, ArrowUpIcon, ArrowDownIcon } from "@chakra-ui/icons";
 import OpenAI from "openai";
 
 interface Message {
   role: "user" | "assistant" | "third";
   content: string;
+  feedback?: "like" | "dislike" | null;
+  feedbackText?: string;
 }
 
 interface ChatInterfaceProps {
@@ -31,6 +34,7 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [thirdPersonInput, setThirdPersonInput] = useState("");
+  const [feedbackInput, setFeedbackInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isThirdPersonEnabled, setIsThirdPersonEnabled] = useState(false);
   const [selectedModel, setSelectedModel] = useState<LLMModel>("gpt-3.5-turbo");
@@ -231,6 +235,37 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
     return "white";
   };
 
+  const handleFeedback = (
+    messageIndex: number,
+    feedback: "like" | "dislike"
+  ) => {
+    setMessages((prev) =>
+      prev.map((msg, idx) =>
+        idx === messageIndex
+          ? {
+              ...msg,
+              feedback,
+              feedbackText: feedback === "dislike" ? "" : undefined,
+            }
+          : msg
+      )
+    );
+    if (feedback === "dislike") {
+      setFeedbackInput("");
+    }
+  };
+
+  const handleFeedbackSubmit = (messageIndex: number) => {
+    if (feedbackInput.trim()) {
+      setMessages((prev) =>
+        prev.map((msg, idx) =>
+          idx === messageIndex ? { ...msg, feedbackText: feedbackInput } : msg
+        )
+      );
+      setFeedbackInput("");
+    }
+  };
+
   return (
     <Box
       w="100%"
@@ -314,16 +349,93 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
                     ? colors.userBg
                     : message.role === "third"
                     ? colors.thirdBg
+                    : message.feedback === "like"
+                    ? "green.50"
+                    : message.feedback === "dislike"
+                    ? "red.50"
                     : colors.assistantBg
                 }
                 color={message.role === "user" ? "white" : "black"}
                 p={{ base: 3, md: 4 }}
                 borderRadius={isThreadThree ? "0" : "lg"}
                 boxShadow="sm"
+                borderLeft={
+                  message.feedback === "like"
+                    ? "4px solid"
+                    : message.feedback === "dislike"
+                    ? "4px solid"
+                    : "none"
+                }
+                borderColor={
+                  message.feedback === "like"
+                    ? "green.400"
+                    : message.feedback === "dislike"
+                    ? "red.400"
+                    : "transparent"
+                }
               >
                 <Text {...threadStyle} fontSize={{ base: "sm", md: "md" }}>
                   {message.content}
                 </Text>
+                {isThreadThree && message.role === "assistant" && (
+                  <VStack align="stretch" spacing={2}>
+                    <HStack spacing={2} justify="flex-end">
+                      <IconButton
+                        aria-label="Like message"
+                        icon={<ArrowUpIcon />}
+                        size="sm"
+                        variant={
+                          message.feedback === "like" ? "solid" : "ghost"
+                        }
+                        colorScheme={
+                          message.feedback === "like" ? "green" : "gray"
+                        }
+                        onClick={() => handleFeedback(index, "like")}
+                      />
+                      <IconButton
+                        aria-label="Dislike message"
+                        icon={<ArrowDownIcon />}
+                        size="sm"
+                        variant={
+                          message.feedback === "dislike" ? "solid" : "ghost"
+                        }
+                        colorScheme={
+                          message.feedback === "dislike" ? "red" : "gray"
+                        }
+                        onClick={() => handleFeedback(index, "dislike")}
+                      />
+                    </HStack>
+                    {message.feedback === "dislike" &&
+                      !message.feedbackText && (
+                        <HStack>
+                          <Input
+                            value={feedbackInput}
+                            onChange={(e) => setFeedbackInput(e.target.value)}
+                            placeholder="Why was this response not helpful?"
+                            size="sm"
+                            bg="white"
+                            onKeyPress={(e) => {
+                              if (e.key === "Enter") {
+                                handleFeedbackSubmit(index);
+                              }
+                            }}
+                          />
+                          <IconButton
+                            aria-label="Submit feedback"
+                            icon={<ChatIcon />}
+                            size="sm"
+                            colorScheme="red"
+                            onClick={() => handleFeedbackSubmit(index)}
+                          />
+                        </HStack>
+                      )}
+                    {message.feedbackText && (
+                      <Text fontSize="xs" color="red.500" fontStyle="italic">
+                        Feedback: {message.feedbackText}
+                      </Text>
+                    )}
+                  </VStack>
+                )}
               </Box>
             </Flex>
           ))}

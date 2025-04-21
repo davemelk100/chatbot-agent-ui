@@ -1,7 +1,6 @@
 import {
   ChakraProvider,
   Box,
-  Container,
   Grid,
   Heading,
   Text,
@@ -62,10 +61,19 @@ function App() {
             {[0, 1, 2, 3].map((threadId) => (
               <Box key={threadId}>
                 <Box mb={3}>
-                  <Heading size="sm" color={textColor} mb={1}>
+                  <Heading
+                    size="sm"
+                    color={textColor}
+                    mb={1}
+                    fontFamily="'Avenir', sans-serif"
+                  >
                     {threadDescriptions[threadId].title}
                   </Heading>
-                  <Text fontSize="sm" color="gray.600">
+                  <Text
+                    fontSize="sm"
+                    color="gray.600"
+                    fontFamily="'Avenir', sans-serif"
+                  >
                     {threadDescriptions[threadId].description}
                   </Text>
                 </Box>
