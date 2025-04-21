@@ -81,13 +81,13 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
     }
     if (isThreadThree) {
       return {
-        bg: "green.50",
-        userBg: "green.500",
-        assistantBg: "green.100",
-        thirdBg: "green.300",
-        borderColor: "green.200",
-        buttonColor: "green",
-        textColor: "green.700",
+        bg: "blue.50",
+        userBg: "blue.600",
+        assistantBg: "blue.100",
+        thirdBg: "blue.300",
+        borderColor: "blue.200",
+        buttonColor: "blue",
+        textColor: "blue.700",
       };
     }
     if (isThreadFour) {
@@ -226,7 +226,7 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
 
   const getInputBgColor = () => {
     if (isThreadTwo) return "orange.50";
-    if (isThreadThree) return "green.50";
+    if (isThreadThree) return "blue.50";
     if (isThreadFour) return "gray.50";
     return "white";
   };
@@ -363,6 +363,7 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
               onClick={handleSendMessage}
               isLoading={isLoading}
               size={{ base: "sm", md: "md" }}
+              borderRadius={isThreadThree ? "0" : "md"}
             />
           </Flex>
           {isThreadOne && isThirdPersonEnabled && (

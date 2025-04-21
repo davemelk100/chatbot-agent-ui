@@ -4,6 +4,7 @@ import {
   Container,
   Grid,
   Heading,
+  Text,
   useColorModeValue,
 } from "@chakra-ui/react";
 import { ChatInterface } from "./components/ChatInterface";
@@ -11,6 +12,28 @@ import { ChatInterface } from "./components/ChatInterface";
 function App() {
   const bgColor = useColorModeValue("gray.100", "gray.900");
   const textColor = useColorModeValue("gray.800", "white");
+
+  const threadDescriptions = [
+    {
+      title: "Multi-Person Chat",
+      description:
+        "Toggle between two-person and three-person conversations with independent AI responses.",
+    },
+    {
+      title: "Model Selector",
+      description:
+        "Switch between different GPT models (3.5, 4, 4 Turbo) to compare their responses.",
+    },
+    {
+      title: "Minimalist Design",
+      description:
+        "Clean, square interface with blue color scheme and DM Sans font.",
+    },
+    {
+      title: "Professional Style",
+      description: "Helvetica font with light grey theme and bold headings.",
+    },
+  ];
 
   return (
     <ChakraProvider>
@@ -38,6 +61,14 @@ function App() {
           >
             {[0, 1, 2, 3].map((threadId) => (
               <Box key={threadId}>
+                <Box mb={3}>
+                  <Heading size="sm" color={textColor} mb={1}>
+                    {threadDescriptions[threadId].title}
+                  </Heading>
+                  <Text fontSize="sm" color="gray.600">
+                    {threadDescriptions[threadId].description}
+                  </Text>
+                </Box>
                 <ChatInterface threadId={threadId} />
               </Box>
             ))}
