@@ -29,8 +29,9 @@ function App() {
         "Like or dislike responses and provide detailed feedback on unhelpful answers.",
     },
     {
-      title: "Professional Style",
-      description: "Helvetica font with light grey theme and bold headings.",
+      title: "Image Upload",
+      description:
+        "Upload images with context. Supports image upload confirmation with GPT-4 text responses.",
     },
   ];
 
