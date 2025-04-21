@@ -30,6 +30,7 @@ type LLMModel = "gpt-3.5-turbo" | "gpt-4" | "gpt-4-turbo";
 export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
+  const [thirdPersonInput, setThirdPersonInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isThirdPersonEnabled, setIsThirdPersonEnabled] = useState(false);
   const [selectedModel, setSelectedModel] = useState<LLMModel>("gpt-3.5-turbo");
@@ -46,16 +47,19 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
       return { fontFamily: "'Poppins', sans-serif", fontWeight: "500" };
     }
     if (isThreadTwo) {
-      return {
-        fontFamily: "'Anek Gurmukhi', sans-serif",
-        fontWeight: "500",
-        fontSize: "lg",
-      };
+      return { fontFamily: "'Avenir', sans-serif", fontWeight: "500" };
     }
     if (isThreadThree) {
       return {
         fontFamily: "'DM Sans', sans-serif",
         fontWeight: "500",
+      };
+    }
+    if (isThreadFour) {
+      return {
+        fontFamily: "Helvetica, Arial, sans-serif",
+        fontWeight: "500",
+        fontSize: "sm",
       };
     }
     return {};
@@ -157,17 +161,6 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
-
-      // If third person is enabled, add their response
-      if (isThreadOne && isThirdPersonEnabled) {
-        const thirdPersonMessage: Message = {
-          role: "third",
-          content: `As a third person, I'd like to add: ${
-            completion.choices[0].message.content || ""
-          }`,
-        };
-        setMessages((prev) => [...prev, thirdPersonMessage]);
-      }
     } catch (error) {
       toast({
         title: "Error",
@@ -179,6 +172,63 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleThirdPersonMessage = async () => {
+    if (!thirdPersonInput.trim()) return;
+
+    const thirdPersonMessage: Message = {
+      role: "third",
+      content: thirdPersonInput,
+    };
+    setMessages((prev) => [...prev, thirdPersonMessage]);
+    setThirdPersonInput("");
+    setIsLoading(true);
+
+    try {
+      const completion = await openai.chat.completions.create({
+        messages: [
+          {
+            role: "system",
+            content: `You are a helpful assistant in chat thread ${
+              threadId + 1
+            }. Keep your responses concise and friendly.`,
+          },
+          ...messages
+            .filter((msg) => msg.role !== "third")
+            .map((msg) => ({
+              role: msg.role as "user" | "assistant",
+              content: msg.content,
+            })),
+          { role: "user", content: thirdPersonInput },
+        ],
+        model: isThreadTwo ? selectedModel : "gpt-3.5-turbo",
+      });
+
+      const assistantMessage: Message = {
+        role: "assistant",
+        content: completion.choices[0].message.content || "",
+      };
+
+      setMessages((prev) => [...prev, assistantMessage]);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to get response from OpenAI",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getInputBgColor = () => {
+    if (isThreadTwo) return "orange.50";
+    if (isThreadThree) return "green.50";
+    if (isThreadFour) return "gray.50";
+    return "white";
   };
 
   return (
@@ -200,9 +250,13 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
       >
         <Flex justify="space-between" align="center">
           <Heading
-            size={{ base: "sm", md: isThreadTwo ? "md" : "sm" }}
+            size={{
+              base: "sm",
+              md: isThreadTwo ? "md" : isThreadFour ? "md" : "sm",
+            }}
             {...threadStyle}
             color={isThreadThree ? colors.bg : colors.textColor}
+            fontWeight={isThreadFour ? "bold" : undefined}
           >
             Chatbot {threadId + 1}
           </Heading>
@@ -282,42 +336,65 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
         borderTop={isThreadFour ? "0" : "1px"}
         borderColor={colors.borderColor}
       >
-        <Flex>
-          <Input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Type your message..."
-            mr={2}
-            onKeyPress={(e) => {
-              if (e.key === "Enter") {
-                handleSendMessage();
-              }
-            }}
-            {...threadStyle}
-            fontSize={{ base: "sm", md: "md" }}
-            bg={
-              isThreadTwo
-                ? "purple.50"
-                : isThreadThree
-                ? "green.50"
-                : isThreadFour
-                ? "gray.50"
-                : "white"
-            }
-            borderColor={colors.borderColor}
-            borderRadius={isThreadThree ? "0" : "md"}
-            _hover={{ borderColor: colors.borderColor }}
-            _focus={{ borderColor: colors.borderColor }}
-          />
-          <IconButton
-            aria-label="Send message"
-            icon={<ChatIcon />}
-            colorScheme={colors.buttonColor}
-            onClick={handleSendMessage}
-            isLoading={isLoading}
-            size={{ base: "sm", md: "md" }}
-          />
-        </Flex>
+        <VStack spacing={3}>
+          <Flex w="100%">
+            <Input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Type your message..."
+              mr={2}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  handleSendMessage();
+                }
+              }}
+              {...threadStyle}
+              fontSize={{ base: "sm", md: "md" }}
+              bg={getInputBgColor()}
+              borderColor={colors.borderColor}
+              borderRadius={isThreadThree ? "0" : "md"}
+              _hover={{ borderColor: colors.borderColor }}
+              _focus={{ borderColor: colors.borderColor }}
+            />
+            <IconButton
+              aria-label="Send message"
+              icon={<ChatIcon />}
+              colorScheme={colors.buttonColor}
+              onClick={handleSendMessage}
+              isLoading={isLoading}
+              size={{ base: "sm", md: "md" }}
+            />
+          </Flex>
+          {isThreadOne && isThirdPersonEnabled && (
+            <Flex w="100%">
+              <Input
+                value={thirdPersonInput}
+                onChange={(e) => setThirdPersonInput(e.target.value)}
+                placeholder="Third person's message..."
+                mr={2}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") {
+                    handleThirdPersonMessage();
+                  }
+                }}
+                {...threadStyle}
+                fontSize={{ base: "sm", md: "md" }}
+                bg="white"
+                borderColor={colors.borderColor}
+                borderRadius={isThreadThree ? "0" : "md"}
+                _hover={{ borderColor: colors.borderColor }}
+                _focus={{ borderColor: colors.borderColor }}
+              />
+              <IconButton
+                aria-label="Send third person message"
+                icon={<ChatIcon />}
+                colorScheme={colors.buttonColor}
+                onClick={handleThirdPersonMessage}
+                size={{ base: "sm", md: "md" }}
+              />
+            </Flex>
+          )}
+        </VStack>
       </Box>
     </Box>
   );

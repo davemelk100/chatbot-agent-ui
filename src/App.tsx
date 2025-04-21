@@ -9,7 +9,7 @@ import {
 import { ChatInterface } from "./components/ChatInterface";
 
 function App() {
-  const bgColor = useColorModeValue("gray.50", "gray.900");
+  const bgColor = useColorModeValue("gray.100", "gray.900");
   const textColor = useColorModeValue("gray.800", "white");
 
   return (

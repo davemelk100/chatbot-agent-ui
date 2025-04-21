@@ -20,6 +20,7 @@ body {
 }
 
 /* Override Chakra UI border for Chatbot 4 */
-.css-1q9jvic {
+.css-1q9jvic,
+.css-nzweks {
   border: none !important;
 }
