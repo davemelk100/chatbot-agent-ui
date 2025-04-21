@@ -236,8 +236,8 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
       w="100%"
       h={{ base: "60vh", md: "75vh" }}
       bg={colors.bg}
-      borderRadius={isThreadThree ? "0" : "lg"}
-      boxShadow="md"
+      borderRadius={isThreadTwo || isThreadThree ? "0" : "lg"}
+      boxShadow={isThreadTwo || isThreadThree ? "none" : "md"}
       overflow="hidden"
       display="flex"
       flexDirection="column"
