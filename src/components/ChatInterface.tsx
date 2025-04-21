@@ -14,7 +14,13 @@ import {
   Select,
   HStack,
 } from "@chakra-ui/react";
-import { ChatIcon, ArrowUpIcon, ArrowDownIcon } from "@chakra-ui/icons";
+import {
+  ChatIcon,
+  ArrowUpIcon,
+  ArrowDownIcon,
+  CloseIcon,
+  AttachmentIcon,
+} from "@chakra-ui/icons";
 import OpenAI from "openai";
 
 interface Message {
@@ -22,23 +28,31 @@ interface Message {
   content: string;
   feedback?: "like" | "dislike" | null;
   feedbackText?: string;
+  imageUrl?: string;
 }
 
 interface ChatInterfaceProps {
   threadId: number;
 }
 
-type LLMModel = "gpt-3.5-turbo" | "gpt-4" | "gpt-4-turbo";
+type LLMModel =
+  | "gpt-3.5-turbo"
+  | "gpt-4"
+  | "gpt-4-turbo"
+  | "gpt-4-vision-preview";
 
 export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [thirdPersonInput, setThirdPersonInput] = useState("");
   const [feedbackInput, setFeedbackInput] = useState("");
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isThirdPersonEnabled, setIsThirdPersonEnabled] = useState(false);
   const [selectedModel, setSelectedModel] = useState<LLMModel>("gpt-3.5-turbo");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const toast = useToast();
 
   const isThreadOne = threadId === 0;
@@ -131,32 +145,118 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = async () => {
-    if (!input.trim()) return;
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        // 5MB limit
+        toast({
+          title: "File too large",
+          description: "Please upload an image smaller than 5MB",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+        return;
+      }
+      setSelectedImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
-    const userMessage: Message = { role: "user", content: input };
+  const handleSendMessage = async () => {
+    if (!input.trim() && !selectedImage) return;
+
+    // Check if API key is set
+    if (!import.meta.env.VITE_OPENAI_API_KEY) {
+      toast({
+        title: "Configuration Error",
+        description: "OpenAI API key is not set. Please check your .env file.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    const userMessage: Message = {
+      role: "user",
+      content: input,
+      imageUrl: imagePreview || undefined,
+    };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
+    setSelectedImage(null);
+    setImagePreview(null);
     setIsLoading(true);
 
     try {
+      const apiMessages: OpenAI.Chat.ChatCompletionMessageParam[] = [
+        {
+          role: "system",
+          content: `You are a helpful assistant in chat thread ${
+            threadId + 1
+          }. Keep your responses concise and friendly.`,
+        },
+        ...messages
+          .filter((msg) => msg.role !== "third")
+          .map((msg) => ({
+            role: msg.role as "user" | "assistant",
+            content: msg.content,
+          })),
+      ];
+
+      const model: LLMModel = selectedImage
+        ? "gpt-4" // Fallback to GPT-4 if vision isn't available
+        : isThreadTwo
+        ? selectedModel
+        : isThreadThree
+        ? "gpt-4"
+        : "gpt-3.5-turbo";
+
+      // If there's an image, add it to the messages
+      if (selectedImage) {
+        const base64Image = imagePreview?.split(",")[1]; // Remove the data URL prefix
+        if (model === "gpt-4-vision-preview") {
+          const content: OpenAI.Chat.ChatCompletionContentPart[] = [
+            {
+              type: "text",
+              text: input || "What can you tell me about this image?",
+            },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:image/jpeg;base64,${base64Image}`,
+              },
+            },
+          ];
+          apiMessages.push({
+            role: "user",
+            content,
+          });
+        } else {
+          // For non-vision models, just send the text
+          apiMessages.push({
+            role: "user",
+            content:
+              input ||
+              "I have uploaded an image. Please note that I can only process text at the moment.",
+          });
+        }
+      } else {
+        apiMessages.push({ role: "user", content: input });
+      }
+
+      console.log("Sending request to OpenAI with model:", model);
+      console.log("Message content:", JSON.stringify(apiMessages, null, 2));
+
       const completion = await openai.chat.completions.create({
-        messages: [
-          {
-            role: "system",
-            content: `You are a helpful assistant in chat thread ${
-              threadId + 1
-            }. Keep your responses concise and friendly.`,
-          },
-          ...messages
-            .filter((msg) => msg.role !== "third")
-            .map((msg) => ({
-              role: msg.role as "user" | "assistant",
-              content: msg.content,
-            })),
-          { role: "user", content: input },
-        ],
-        model: isThreadTwo ? selectedModel : "gpt-3.5-turbo",
+        messages: apiMessages,
+        model,
       });
 
       const assistantMessage: Message = {
@@ -166,11 +266,29 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
 
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
+      console.error("OpenAI API Error:", error);
+      let errorMessage = "Failed to get response from OpenAI. ";
+
+      if (error instanceof Error) {
+        if (error.message.includes("401")) {
+          errorMessage +=
+            "Please check your API key is valid and has access to GPT-4.";
+        } else if (error.message.includes("429")) {
+          errorMessage +=
+            "You may have hit the rate limit or need to add billing information.";
+        } else if (error.message.includes("404")) {
+          errorMessage +=
+            "The model is not available. Please check your API key has access to GPT-4 Vision.";
+        } else {
+          errorMessage += `Error: ${error.message}`;
+        }
+      }
+
       toast({
         title: "Error",
-        description: "Failed to get response from OpenAI",
+        description: errorMessage,
         status: "error",
-        duration: 3000,
+        duration: 5000,
         isClosable: true,
       });
     } finally {
@@ -377,6 +495,19 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
                 <Text {...threadStyle} fontSize={{ base: "sm", md: "md" }}>
                   {message.content}
                 </Text>
+                {message.imageUrl && (
+                  <Box mt={2} maxW="300px">
+                    <img
+                      src={message.imageUrl}
+                      alt="Uploaded content"
+                      style={{
+                        maxWidth: "100%",
+                        height: "auto",
+                        borderRadius: "4px",
+                      }}
+                    />
+                  </Box>
+                )}
                 {isThreadThree && message.role === "assistant" && (
                   <VStack align="stretch" spacing={2}>
                     <HStack spacing={2} justify="flex-end">
@@ -449,7 +580,48 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
         borderColor={colors.borderColor}
       >
         <VStack spacing={3}>
+          {isThreadFour && imagePreview && (
+            <Box position="relative" w="100%">
+              <img
+                src={imagePreview}
+                alt="Preview"
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: "200px",
+                  borderRadius: "4px",
+                }}
+              />
+              <IconButton
+                aria-label="Remove image"
+                icon={<CloseIcon />}
+                size="xs"
+                position="absolute"
+                top={1}
+                right={1}
+                onClick={() => {
+                  setSelectedImage(null);
+                  setImagePreview(null);
+                }}
+              />
+            </Box>
+          )}
           <Flex w="100%">
+            {isThreadFour && (
+              <IconButton
+                aria-label="Upload image"
+                icon={<AttachmentIcon />}
+                size="sm"
+                mr={2}
+                onClick={() => fileInputRef.current?.click()}
+              />
+            )}
+            <Input
+              type="file"
+              ref={fileInputRef}
+              display="none"
+              accept="image/*"
+              onChange={handleImageUpload}
+            />
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}

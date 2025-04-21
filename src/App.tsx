@@ -24,9 +24,9 @@ function App() {
         "Switch between different GPT models (3.5, 4, 4 Turbo) to compare their responses.",
     },
     {
-      title: "Minimalist Design",
+      title: "Feedback System",
       description:
-        "Clean, square interface with blue color scheme and DM Sans font.",
+        "Like or dislike responses and provide detailed feedback on unhelpful answers.",
     },
     {
       title: "Professional Style",
