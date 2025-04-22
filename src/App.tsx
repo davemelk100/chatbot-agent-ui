@@ -36,7 +36,7 @@ function App() {
             mb={{ base: theme.spacing.lg, md: theme.spacing.xl }}
             color={textColor}
             fontFamily={theme.fonts.heading.primary}
-            fontWeight="500"
+            fontWeight="bold"
             textAlign="left"
           >
             {appTitle}
