@@ -8,8 +8,10 @@ import {
   GridItem,
   useColorModeValue,
   Code,
+  Button,
 } from "@chakra-ui/react";
 import { theme, threadStyles, threadColors } from "../config/designSystem";
+import { generateFigmaTokens } from "../utils/convertToFigmaTokens";
 
 type ThreadId = "1" | "2" | "3";
 type ThreadKey = `thread${ThreadId}`;
@@ -17,6 +19,10 @@ type ThreadKey = `thread${ThreadId}`;
 export const DesignSystem = () => {
   const borderColor = useColorModeValue("gray.200", "gray.700");
   const cardBg = useColorModeValue("white", "gray.700");
+
+  const handleExport = () => {
+    generateFigmaTokens();
+  };
 
   const renderThreadSection = (threadId: ThreadId) => {
     const threadName = `Thread ${threadId}`;
@@ -181,46 +187,51 @@ export const DesignSystem = () => {
   };
 
   return (
-    <Grid
-      templateColumns={{
-        base: "1fr",
-        sm: "repeat(2, 1fr)",
-        lg: "repeat(2, 1fr)",
-        xl: "repeat(3, 1fr)",
-      }}
-      gap={{ base: theme.spacing.md, md: theme.spacing.lg }}
-      templateAreas={{
-        base: `
-          "thread1"
-          "design1"
-          "thread2"
-          "design2"
-          "thread3"
-          "design3"
-        `,
-        sm: `
-          "thread1 thread2"
-          "design1 design2"
-          "thread3 ."
-          "design3 ."
-        `,
-        lg: `
-          "thread1 thread2"
-          "design1 design2"
-          "thread3 ."
-          "design3 ."
-        `,
-        xl: `
-          "thread1 thread2 thread3"
-          "design1 design2 design3"
-        `,
-      }}
-    >
-      {(["1", "2", "3"] as const).map((threadId) => (
-        <GridItem key={threadId} gridArea={`design${threadId}`}>
-          {renderThreadSection(threadId)}
-        </GridItem>
-      ))}
-    </Grid>
+    <Box>
+      <Button onClick={handleExport} mb={4} colorScheme="blue">
+        Export to Figma
+      </Button>
+      <Grid
+        templateColumns={{
+          base: "1fr",
+          sm: "repeat(2, 1fr)",
+          lg: "repeat(2, 1fr)",
+          xl: "repeat(3, 1fr)",
+        }}
+        gap={{ base: theme.spacing.md, md: theme.spacing.lg }}
+        templateAreas={{
+          base: `
+            "thread1"
+            "design1"
+            "thread2"
+            "design2"
+            "thread3"
+            "design3"
+          `,
+          sm: `
+            "thread1 thread2"
+            "design1 design2"
+            "thread3 ."
+            "design3 ."
+          `,
+          lg: `
+            "thread1 thread2"
+            "design1 design2"
+            "thread3 ."
+            "design3 ."
+          `,
+          xl: `
+            "thread1 thread2 thread3"
+            "design1 design2 design3"
+          `,
+        }}
+      >
+        {(["1", "2", "3"] as const).map((threadId) => (
+          <GridItem key={threadId} gridArea={`design${threadId}`}>
+            {renderThreadSection(threadId)}
+          </GridItem>
+        ))}
+      </Grid>
+    </Box>
   );
 };
