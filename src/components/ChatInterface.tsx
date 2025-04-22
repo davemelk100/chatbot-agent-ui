@@ -64,7 +64,6 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
   const isThreadOne = threadId === 0;
   const isThreadTwo = threadId === 1;
   const isThreadThree = threadId === 2;
-  const isThreadFour = threadId === 3;
 
   const getThreadStyle = () => {
     switch (threadId) {
@@ -74,8 +73,6 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
         return threadStyles.thread2;
       case 2:
         return threadStyles.thread3;
-      case 3:
-        return threadStyles.thread4;
       default:
         return {};
     }
@@ -89,8 +86,6 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
         return threadColors.thread2;
       case 2:
         return threadColors.thread3;
-      case 3:
-        return threadColors.thread4;
       default:
         return threadColors.thread1;
     }
@@ -313,7 +308,6 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
   const getInputBgColor = () => {
     if (isThreadTwo) return "orange.50";
     if (isThreadThree) return "blue.50";
-    if (isThreadFour) return "gray.50";
     return "white";
   };
 
@@ -375,11 +369,10 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
           <Heading
             size={{
               base: "sm",
-              md: isThreadTwo ? "md" : isThreadFour ? "md" : "sm",
+              md: isThreadTwo ? "md" : "sm",
             }}
             {...threadStyle}
             color={isThreadThree ? colors.bg : colors.textColor}
-            fontWeight={isThreadFour ? "bold" : undefined}
           >
             Chatbot {threadId + 1}
           </Heading>
@@ -548,11 +541,11 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
 
       <Box
         p={{ base: 3, md: 4 }}
-        borderTop={isThreadFour ? "0" : "1px"}
+        borderTop={isThreadThree ? "0" : "1px"}
         borderColor={colors.borderColor}
       >
         <VStack spacing={3}>
-          {isThreadFour && imagePreview && (
+          {isThreadThree && imagePreview && (
             <Box position="relative" w="100%">
               <img
                 src={imagePreview}
@@ -578,12 +571,12 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
             </Box>
           )}
           <Flex w="100%">
-            {isThreadFour && (
+            {isThreadThree && (
               <IconButton
                 aria-label={buttonLabels.upload}
                 icon={<AttachmentIcon />}
-                size="sm"
-                mr={2}
+                variant="ghost"
+                colorScheme="blue"
                 onClick={() => fileInputRef.current?.click()}
               />
             )}
@@ -593,8 +586,6 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
               display="none"
               accept="image/*"
               onChange={handleImageUpload}
-              id={`file-upload-${threadId}`}
-              name={`file-upload-${threadId}`}
             />
             <Input
               id={`message-input-${threadId}`}

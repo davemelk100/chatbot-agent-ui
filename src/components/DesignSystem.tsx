@@ -7,7 +7,6 @@ import {
   Grid,
   GridItem,
   useColorModeValue,
-  Divider,
   Code,
 } from "@chakra-ui/react";
 import { theme, threadStyles, threadColors } from "../config/designSystem";
@@ -115,7 +114,6 @@ export const DesignSystem = () => {
               <Heading
                 as="h4"
                 size={{ base: "lg", md: "2xl" }}
-                fontWeight="normal"
                 {...style}
                 mb={2}
               >

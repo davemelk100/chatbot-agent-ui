@@ -2,7 +2,7 @@ export const threadDescriptions = [
   {
     title: "Multi-Person Chat",
     description:
-      "Toggle between two-person and three-person conversations with independent AI responses.",
+      "Toggle between two and three-person conversations with independent AI responses.",
   },
   {
     title: "Model Selector",
