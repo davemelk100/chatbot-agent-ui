@@ -15,6 +15,23 @@ body {
   min-height: 100vh;
 }
 
+h1 {
+  font-size: 2rem;
+}
+
+h2,
+.chakra-heading.css-qxemut {
+  font-size: 1.5rem;
+  font-weight: 300;
+}
+
+h3 {
+  font-size: 1.25rem;
+}
+
+h4 {
+  font-size: 1rem;
+}
 .no-border {
   border: none !important;
 }
@@ -23,4 +40,12 @@ body {
 .css-1q9jvic,
 .css-nzweks {
   border: none !important;
+}
+
+.css-1mxw4pp {
+  background: transparent !important;
+}
+
+.chakra-select__icon {
+  display: none !important;
 }

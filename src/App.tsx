@@ -1,28 +1,41 @@
 import {
   ChakraProvider,
   Box,
-  Grid,
   Heading,
   Text,
   useColorModeValue,
+  Grid,
+  GridItem,
 } from "@chakra-ui/react";
 import { ChatInterface } from "./components/ChatInterface";
 import { threadDescriptions, appTitle } from "./config/textContent";
+import { theme } from "./config/designSystem";
+import { DesignSystem } from "./components/DesignSystem";
 
 function App() {
-  const bgColor = useColorModeValue("gray.100", "gray.900");
-  const textColor = useColorModeValue("gray.800", "white");
+  const bgColor = useColorModeValue(
+    theme.colors.secondary[100],
+    theme.colors.secondary[900]
+  );
+  const textColor = useColorModeValue(
+    theme.colors.secondary[800],
+    theme.colors.secondary[100]
+  );
 
   return (
-    <ChakraProvider>
-      <Box minH="100vh" bg={bgColor} p={{ base: 4, md: 8 }}>
+    <ChakraProvider theme={theme}>
+      <Box
+        minH="100vh"
+        bg={bgColor}
+        p={{ base: theme.spacing.md, md: theme.spacing.lg }}
+      >
         <Box maxW="1600px" mx="auto">
           <Heading
             as="h1"
             size={{ base: "lg", md: "xl" }}
-            mb={{ base: 6, md: 8 }}
+            mb={{ base: theme.spacing.lg, md: theme.spacing.xl }}
             color={textColor}
-            fontFamily="'Avenir', sans-serif"
+            fontFamily={theme.fonts.heading.primary}
             fontWeight="500"
             textAlign="left"
           >
@@ -33,33 +46,54 @@ function App() {
               base: "1fr",
               sm: "repeat(2, 1fr)",
               lg: "repeat(2, 1fr)",
-              xl: "repeat(4, 1fr)",
+              xl: "repeat(3, 1fr)",
             }}
-            gap={{ base: 4, md: 6 }}
+            gap={{ base: theme.spacing.md, md: theme.spacing.lg }}
+            templateAreas={{
+              base: `
+                "thread1"
+                "thread2"
+                "thread3"
+              `,
+              sm: `
+                "thread1 thread2"
+                "thread3 ."
+              `,
+              lg: `
+                "thread1 thread2"
+                "thread3 ."
+              `,
+              xl: `
+                "thread1 thread2 thread3"
+              `,
+            }}
           >
-            {[0, 1, 2, 3].map((threadId) => (
-              <Box key={threadId}>
-                <Box mb={3}>
+            {[0, 1, 2].map((threadId) => (
+              <GridItem key={threadId} gridArea={`thread${threadId + 1}`}>
+                <Box mb={theme.spacing.md}>
                   <Heading
                     size="sm"
                     color={textColor}
-                    mb={1}
-                    fontFamily="'Avenir', sans-serif"
+                    mb={theme.spacing.xs}
+                    fontFamily={theme.fonts.heading.primary}
                   >
                     {threadDescriptions[threadId].title}
                   </Heading>
                   <Text
                     fontSize="sm"
-                    color="gray.600"
-                    fontFamily="'Avenir', sans-serif"
+                    color={theme.colors.secondary[600]}
+                    fontFamily={theme.fonts.body.primary}
                   >
                     {threadDescriptions[threadId].description}
                   </Text>
                 </Box>
                 <ChatInterface threadId={threadId} />
-              </Box>
+              </GridItem>
             ))}
           </Grid>
+          <Box mt="2rem">
+            <DesignSystem />
+          </Box>
         </Box>
       </Box>
     </ChakraProvider>

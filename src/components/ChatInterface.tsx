@@ -8,18 +8,18 @@ import {
   Flex,
   IconButton,
   Heading,
-  Switch,
   FormControl,
-  FormLabel,
   Select,
   HStack,
+  Tooltip,
 } from "@chakra-ui/react";
 import {
   ChatIcon,
-  ArrowUpIcon,
-  ArrowDownIcon,
   CloseIcon,
   AttachmentIcon,
+  AddIcon,
+  CheckIcon,
+  NotAllowedIcon,
 } from "@chakra-ui/icons";
 import OpenAI from "openai";
 import {
@@ -27,6 +27,7 @@ import {
   placeholders,
   buttonLabels,
 } from "../config/textContent";
+import { theme, threadStyles, threadColors } from "../config/designSystem";
 
 interface Message {
   role: "user" | "assistant" | "third";
@@ -66,75 +67,36 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
   const isThreadFour = threadId === 3;
 
   const getThreadStyle = () => {
-    if (isThreadOne) {
-      return { fontFamily: "'Poppins', sans-serif", fontWeight: "500" };
+    switch (threadId) {
+      case 0:
+        return threadStyles.thread1;
+      case 1:
+        return threadStyles.thread2;
+      case 2:
+        return threadStyles.thread3;
+      case 3:
+        return threadStyles.thread4;
+      default:
+        return {};
     }
-    if (isThreadTwo) {
-      return { fontFamily: "'Avenir', sans-serif", fontWeight: "500" };
+  };
+
+  const getThreadColors = () => {
+    switch (threadId) {
+      case 0:
+        return threadColors.thread1;
+      case 1:
+        return threadColors.thread2;
+      case 2:
+        return threadColors.thread3;
+      case 3:
+        return threadColors.thread4;
+      default:
+        return threadColors.thread1;
     }
-    if (isThreadThree) {
-      return {
-        fontFamily: "'DM Sans', sans-serif",
-        fontWeight: "500",
-      };
-    }
-    if (isThreadFour) {
-      return {
-        fontFamily: "Helvetica, Arial, sans-serif",
-        fontWeight: "500",
-        fontSize: "sm",
-      };
-    }
-    return {};
   };
 
   const threadStyle = getThreadStyle();
-
-  const getThreadColors = () => {
-    if (isThreadTwo) {
-      return {
-        bg: "orange.50",
-        userBg: "orange.600",
-        assistantBg: "orange.100",
-        thirdBg: "orange.300",
-        borderColor: "orange.200",
-        buttonColor: "orange",
-        textColor: "orange.700",
-      };
-    }
-    if (isThreadThree) {
-      return {
-        bg: "blue.50",
-        userBg: "blue.600",
-        assistantBg: "blue.100",
-        thirdBg: "blue.300",
-        borderColor: "blue.200",
-        buttonColor: "blue",
-        textColor: "blue.700",
-      };
-    }
-    if (isThreadFour) {
-      return {
-        bg: "gray.50",
-        userBg: "gray.600",
-        assistantBg: "gray.100",
-        thirdBg: "gray.300",
-        borderColor: "gray.300",
-        buttonColor: "gray",
-        textColor: "gray.700",
-      };
-    }
-    return {
-      bg: "white",
-      userBg: "blue.500",
-      assistantBg: "gray.100",
-      thirdBg: "blue.300",
-      borderColor: "gray.200",
-      buttonColor: "blue",
-      textColor: undefined,
-    };
-  };
-
   const colors = getThreadColors();
 
   const openai = new OpenAI({
@@ -391,8 +353,14 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
       w="100%"
       h={{ base: "60vh", md: "75vh" }}
       bg={colors.bg}
-      borderRadius={isThreadTwo || isThreadThree ? "0" : "lg"}
-      boxShadow={isThreadTwo || isThreadThree ? "none" : "md"}
+      borderRadius={
+        threadId === 1 || threadId === 2
+          ? theme.borderRadius.none
+          : theme.borderRadius.lg
+      }
+      boxShadow={
+        threadId === 1 || threadId === 2 ? theme.shadows.none : theme.shadows.md
+      }
       overflow="hidden"
       display="flex"
       flexDirection="column"
@@ -417,18 +385,20 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
           </Heading>
           <Flex gap={4} align="center">
             {isThreadOne && (
-              <FormControl display="flex" alignItems="center" w="auto">
-                <FormLabel htmlFor="third-person" mb="0" fontSize="sm">
-                  Third Person
-                </FormLabel>
-                <Switch
-                  id="third-person"
-                  isChecked={isThirdPersonEnabled}
-                  onChange={(e) => setIsThirdPersonEnabled(e.target.checked)}
-                  colorScheme="blue"
+              <Tooltip
+                label="Add a third person to the conversation"
+                placement="bottom"
+              >
+                <IconButton
+                  aria-label="Add third person"
+                  icon={<AddIcon />}
                   size="sm"
+                  colorScheme="blue"
+                  onClick={() => setIsThirdPersonEnabled(true)}
+                  isDisabled={isThirdPersonEnabled}
+                  variant="solid"
                 />
-              </FormControl>
+              </Tooltip>
             )}
             {isThreadTwo && (
               <FormControl w="auto">
@@ -436,9 +406,6 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
                   size="sm"
                   value={selectedModel}
                   onChange={(e) => setSelectedModel(e.target.value as LLMModel)}
-                  bg={colors.bg}
-                  color={colors.textColor}
-                  borderColor={colors.borderColor}
                 >
                   <option value="gpt-3.5-turbo">GPT-3.5</option>
                   <option value="gpt-4">GPT-4</option>
@@ -470,9 +437,9 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
                     : message.role === "third"
                     ? colors.thirdBg
                     : message.feedback === "like"
-                    ? "green.50"
+                    ? colors.assistantBgLiked
                     : message.feedback === "dislike"
-                    ? "red.50"
+                    ? colors.assistantBgDisliked
                     : colors.assistantBg
                 }
                 color={message.role === "user" ? "white" : "black"}
@@ -515,7 +482,7 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
                     <HStack spacing={2} justify="flex-end">
                       <IconButton
                         aria-label="Like message"
-                        icon={<ArrowUpIcon />}
+                        icon={<CheckIcon />}
                         size="sm"
                         variant={
                           message.feedback === "like" ? "solid" : "ghost"
@@ -527,7 +494,7 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
                       />
                       <IconButton
                         aria-label="Dislike message"
-                        icon={<ArrowDownIcon />}
+                        icon={<NotAllowedIcon />}
                         size="sm"
                         variant={
                           message.feedback === "dislike" ? "solid" : "ghost"
@@ -538,13 +505,16 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
                         onClick={() => handleFeedback(index, "dislike")}
                       />
                     </HStack>
-                    {message.feedback === "dislike" &&
+                    {isThreadThree &&
+                      message.feedback === "dislike" &&
                       !message.feedbackText && (
                         <HStack>
                           <Input
+                            id={`feedback-input-${threadId}-${index}`}
+                            name={`feedback-input-${threadId}-${index}`}
                             value={feedbackInput}
                             onChange={(e) => setFeedbackInput(e.target.value)}
-                            placeholder="Why was this response not helpful?"
+                            placeholder={placeholders.feedbackInput}
                             size="sm"
                             bg="white"
                             onKeyPress={(e) => {
@@ -554,7 +524,7 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
                             }}
                           />
                           <IconButton
-                            aria-label="Submit feedback"
+                            aria-label={buttonLabels.submitFeedback}
                             icon={<ChatIcon />}
                             size="sm"
                             colorScheme="red"
@@ -610,7 +580,7 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
           <Flex w="100%">
             {isThreadFour && (
               <IconButton
-                aria-label="Upload image"
+                aria-label={buttonLabels.upload}
                 icon={<AttachmentIcon />}
                 size="sm"
                 mr={2}
@@ -623,8 +593,12 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
               display="none"
               accept="image/*"
               onChange={handleImageUpload}
+              id={`file-upload-${threadId}`}
+              name={`file-upload-${threadId}`}
             />
             <Input
+              id={`message-input-${threadId}`}
+              name={`message-input-${threadId}`}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={placeholders.messageInput}
@@ -643,7 +617,7 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
               _focus={{ borderColor: colors.borderColor }}
             />
             <IconButton
-              aria-label="Send message"
+              aria-label={buttonLabels.send}
               icon={<ChatIcon />}
               colorScheme={colors.buttonColor}
               onClick={handleSendMessage}
@@ -655,9 +629,11 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
           {isThreadOne && isThirdPersonEnabled && (
             <Flex w="100%">
               <Input
+                id={`third-person-input-${threadId}`}
+                name={`third-person-input-${threadId}`}
                 value={thirdPersonInput}
                 onChange={(e) => setThirdPersonInput(e.target.value)}
-                placeholder="Third person's message..."
+                placeholder={placeholders.thirdPersonInput}
                 mr={2}
                 onKeyPress={(e) => {
                   if (e.key === "Enter") {
@@ -673,7 +649,7 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
                 _focus={{ borderColor: colors.borderColor }}
               />
               <IconButton
-                aria-label="Send third person message"
+                aria-label={buttonLabels.send}
                 icon={<ChatIcon />}
                 colorScheme={colors.buttonColor}
                 onClick={handleThirdPersonMessage}
