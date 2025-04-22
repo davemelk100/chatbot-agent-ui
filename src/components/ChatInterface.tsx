@@ -22,6 +22,11 @@ import {
   AttachmentIcon,
 } from "@chakra-ui/icons";
 import OpenAI from "openai";
+import {
+  errorMessages,
+  placeholders,
+  buttonLabels,
+} from "../config/textContent";
 
 interface Message {
   role: "user" | "assistant" | "third";
@@ -151,8 +156,8 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
       if (file.size > 5 * 1024 * 1024) {
         // 5MB limit
         toast({
-          title: "File too large",
-          description: "Please upload an image smaller than 5MB",
+          title: "Error",
+          description: errorMessages.fileTooLarge,
           status: "error",
           duration: 3000,
           isClosable: true,
@@ -175,7 +180,7 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
     if (!import.meta.env.VITE_OPENAI_API_KEY) {
       toast({
         title: "Configuration Error",
-        description: "OpenAI API key is not set. Please check your .env file.",
+        description: errorMessages.configError,
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -267,18 +272,15 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
       console.error("OpenAI API Error:", error);
-      let errorMessage = "Failed to get response from OpenAI. ";
+      let errorMessage = errorMessages.apiError;
 
       if (error instanceof Error) {
         if (error.message.includes("401")) {
-          errorMessage +=
-            "Please check your API key is valid and has access to GPT-4.";
+          errorMessage += errorMessages.invalidApiKey;
         } else if (error.message.includes("429")) {
-          errorMessage +=
-            "You may have hit the rate limit or need to add billing information.";
+          errorMessage += errorMessages.rateLimit;
         } else if (error.message.includes("404")) {
-          errorMessage +=
-            "The model is not available. Please check your API key has access to GPT-4 Vision.";
+          errorMessage += errorMessages.modelUnavailable;
         } else {
           errorMessage += `Error: ${error.message}`;
         }
@@ -625,7 +627,7 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Type your message..."
+              placeholder={placeholders.messageInput}
               mr={2}
               onKeyPress={(e) => {
                 if (e.key === "Enter") {

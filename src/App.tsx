@@ -7,33 +7,11 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { ChatInterface } from "./components/ChatInterface";
+import { threadDescriptions, appTitle } from "./config/textContent";
 
 function App() {
   const bgColor = useColorModeValue("gray.100", "gray.900");
   const textColor = useColorModeValue("gray.800", "white");
-
-  const threadDescriptions = [
-    {
-      title: "Multi-Person Chat",
-      description:
-        "Toggle between two-person and three-person conversations with independent AI responses.",
-    },
-    {
-      title: "Model Selector",
-      description:
-        "Switch between different GPT models (3.5, 4, 4 Turbo) to compare their responses.",
-    },
-    {
-      title: "Feedback System",
-      description:
-        "Like or dislike responses and provide detailed feedback on unhelpful answers.",
-    },
-    {
-      title: "Image Upload",
-      description:
-        "Upload images with context. Supports image upload confirmation with GPT-4 text responses.",
-    },
-  ];
 
   return (
     <ChakraProvider>
@@ -48,7 +26,7 @@ function App() {
             fontWeight="500"
             textAlign="left"
           >
-            Agent UI Interfaces
+            {appTitle}
           </Heading>
           <Grid
             templateColumns={{
