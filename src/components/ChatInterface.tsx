@@ -570,7 +570,7 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
               />
             </Box>
           )}
-          <Flex w="100%">
+          <Flex w="100%" gap={2}>
             {isThreadThree && (
               <IconButton
                 aria-label={buttonLabels.upload}
@@ -593,7 +593,7 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={placeholders.messageInput}
-              mr={2}
+              flex="1"
               onKeyPress={(e) => {
                 if (e.key === "Enter") {
                   handleSendMessage();

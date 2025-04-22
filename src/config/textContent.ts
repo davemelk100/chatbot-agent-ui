@@ -2,17 +2,17 @@ export const threadDescriptions = [
   {
     title: "Multi-Person Chat",
     description:
-      "Toggle between two and three-person conversations with independent AI responses.",
+      "Toggle between two and three-person chats.",
   },
   {
     title: "Model Selector",
     description:
-      "Switch between different GPT models (3.5, 4, 4 Turbo) to compare their responses.",
+      "Switch between different GPT models to compare their responses.",
   },
   {
     title: "Feedback System",
     description:
-      "Like or dislike responses and provide detailed feedback on unhelpful answers.",
+      "Like or dislike responses and provide feedback.",
   },
   {
     title: "Image Upload",
