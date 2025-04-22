@@ -188,7 +188,22 @@ export const DesignSystem = () => {
 
   return (
     <Box>
-      <Button onClick={handleExport} mb={4} colorScheme="blue">
+      <Button
+        onClick={handleExport}
+        mb={4}
+        colorScheme="blue"
+        fontFamily={theme.fonts.body.primary}
+        fontWeight="500"
+        size="md"
+        px={6}
+        py={3}
+        borderRadius="md"
+        _hover={{
+          transform: "translateY(-1px)",
+          boxShadow: "md",
+        }}
+        transition="all 0.2s"
+      >
         Export to Figma
       </Button>
       <Grid
