@@ -454,7 +454,11 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
                     : "transparent"
                 }
               >
-                <Text {...threadStyle} fontSize={{ base: "sm", md: "md" }}>
+                <Text
+                  {...threadStyle}
+                  fontSize={{ base: "sm", md: "md" }}
+                  color="white"
+                >
                   {message.content}
                 </Text>
                 {message.imageUrl && (
