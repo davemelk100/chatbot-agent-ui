@@ -7,7 +7,7 @@ export const threadDescriptions = [
   {
     title: "Model Selector",
     description:
-      "Switch between different GPT models to compare their responses.",
+      "Switch between GPT models to compare their responses.",
   },
   {
     title: "Feedback System",
