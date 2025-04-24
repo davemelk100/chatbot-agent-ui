@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import {
   Box,
   VStack,
@@ -97,14 +97,6 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
     apiKey: import.meta.env.VITE_OPENAI_API_KEY,
     dangerouslyAllowBrowser: true,
   });
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -625,7 +617,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                 value={thirdPersonInput}
                 onChange={(e) => setThirdPersonInput(e.target.value)}
                 placeholder={placeholders.thirdPersonInput}
-                mr={2}
+                flex="1"
                 onKeyPress={(e) => {
                   if (e.key === "Enter") {
                     handleThirdPersonMessage();
