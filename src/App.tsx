@@ -7,10 +7,10 @@ import {
   Grid,
   GridItem,
 } from "@chakra-ui/react";
-import { ChatInterface } from "./components/ChatInterface";
+import { Suspense } from "react";
 import { threadDescriptions, appTitle } from "./config/textContent";
 import { theme } from "./config/designSystem";
-import { DesignSystem } from "./components/DesignSystem";
+import { ChatInterface, DesignSystem } from "./components/lazy";
 
 function App() {
   const bgColor = useColorModeValue(
@@ -87,12 +87,16 @@ function App() {
                     {threadDescriptions[threadId].description}
                   </Text>
                 </Box>
-                <ChatInterface threadId={threadId} />
+                <Suspense fallback={<Box>Loading chat interface...</Box>}>
+                  <ChatInterface threadId={threadId} />
+                </Suspense>
               </GridItem>
             ))}
           </Grid>
           <Box mt="2rem">
-            <DesignSystem />
+            <Suspense fallback={<Box>Loading design system...</Box>}>
+              <DesignSystem />
+            </Suspense>
           </Box>
         </Box>
       </Box>

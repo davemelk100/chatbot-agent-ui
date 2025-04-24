@@ -16,7 +16,7 @@ import { generateFigmaTokens } from "../utils/convertToFigmaTokens";
 type ThreadId = "1" | "2" | "3";
 type ThreadKey = `thread${ThreadId}`;
 
-export const DesignSystem = () => {
+export default function DesignSystem() {
   const borderColor = useColorModeValue("gray.200", "gray.700");
   const cardBg = useColorModeValue("white", "gray.700");
 
@@ -249,4 +249,4 @@ export const DesignSystem = () => {
       </Grid>
     </Box>
   );
-};
+}

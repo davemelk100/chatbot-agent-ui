@@ -16,7 +16,6 @@ import {
 import {
   ChatIcon,
   CloseIcon,
-  AttachmentIcon,
   AddIcon,
   CheckIcon,
   NotAllowedIcon,
@@ -47,7 +46,7 @@ type LLMModel =
   | "gpt-4-turbo"
   | "gpt-4-vision-preview";
 
-export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
+export default function ChatInterface({ threadId }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [thirdPersonInput, setThirdPersonInput] = useState("");
@@ -457,7 +456,13 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
                 <Text
                   {...threadStyle}
                   fontSize={{ base: "sm", md: "md" }}
-                  color="white"
+                  color={
+                    message.role === "user"
+                      ? "white"
+                      : isThreadThree
+                      ? "black"
+                      : "black"
+                  }
                 >
                   {message.content}
                 </Text>
@@ -575,15 +580,6 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
             </Box>
           )}
           <Flex w="100%" gap={2}>
-            {isThreadThree && (
-              <IconButton
-                aria-label={buttonLabels.upload}
-                icon={<AttachmentIcon />}
-                variant="ghost"
-                colorScheme="blue"
-                onClick={() => fileInputRef.current?.click()}
-              />
-            )}
             <Input
               type="file"
               ref={fileInputRef}
@@ -656,4 +652,4 @@ export const ChatInterface = ({ threadId }: ChatInterfaceProps) => {
       </Box>
     </Box>
   );
-};
+}
