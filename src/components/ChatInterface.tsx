@@ -12,6 +12,9 @@ import {
   Select,
   HStack,
   Tooltip,
+  Button,
+  createStandaloneToast,
+  Portal,
 } from "@chakra-ui/react";
 import {
   ChatIcon,
@@ -19,6 +22,7 @@ import {
   AddIcon,
   CheckIcon,
   NotAllowedIcon,
+  CopyIcon,
 } from "@chakra-ui/icons";
 import OpenAI from "openai";
 import {
@@ -58,7 +62,8 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
   const [selectedModel, setSelectedModel] = useState<LLMModel>("gpt-3.5-turbo");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const toast = useToast();
+  const { toast } = createStandaloneToast();
+  const [shareLink, setShareLink] = useState<string>("");
 
   const isThreadOne = threadId === 0;
   const isThreadTwo = threadId === 1;
@@ -109,6 +114,9 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
           status: "error",
           duration: 3000,
           isClosable: true,
+          containerStyle: {
+            background: "white",
+          },
         });
         return;
       }
@@ -132,6 +140,9 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
         status: "error",
         duration: 5000,
         isClosable: true,
+        containerStyle: {
+          background: "white",
+        },
       });
       return;
     }
@@ -240,6 +251,9 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
         status: "error",
         duration: 5000,
         isClosable: true,
+        containerStyle: {
+          background: "white",
+        },
       });
     } finally {
       setIsLoading(false);
@@ -290,6 +304,9 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
         status: "error",
         duration: 3000,
         isClosable: true,
+        containerStyle: {
+          background: "white",
+        },
       });
     } finally {
       setIsLoading(false);
@@ -333,6 +350,69 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
     }
   };
 
+  const generateShareLink = () => {
+    const baseUrl = window.location.origin;
+    const chatId = `chat-${threadId}-${Date.now()}`;
+    const link = `${baseUrl}?chat=${chatId}`;
+    setShareLink(link);
+    navigator.clipboard.writeText(link);
+
+    const modal = (
+      <Portal>
+        <Box
+          position="fixed"
+          top="0"
+          left="0"
+          right="0"
+          bottom="0"
+          bg="rgba(0, 0, 0, 0.4)"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          zIndex="toast"
+          animation="fadeIn 0.3s ease-in-out"
+          css={{
+            "@keyframes fadeIn": {
+              "0%": {
+                opacity: 0,
+              },
+              "100%": {
+                opacity: 1,
+              },
+            },
+          }}
+        >
+          <Box
+            bg="white"
+            width="500px"
+            borderRadius="8px"
+            boxShadow="0 4px 6px rgba(0, 0, 0, 0.1)"
+            p={8}
+            animation="fadeIn 0.3s ease-in-out"
+          >
+            <Flex align="center" gap={4}>
+              <CheckIcon boxSize="24px" color="green.500" />
+              <Box>
+                <Text fontFamily="Poppins" fontSize="18px" fontWeight="medium">
+                  Link Copied
+                </Text>
+                <Text fontFamily="Poppins" fontSize="16px" color="gray.600">
+                  Share this link with the third person to join the chat
+                </Text>
+              </Box>
+            </Flex>
+          </Box>
+        </Box>
+      </Portal>
+    );
+
+    toast({
+      render: () => modal,
+      duration: 3000,
+      isClosable: true,
+    });
+  };
+
   return (
     <Box
       w="100%"
@@ -368,21 +448,17 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
             Chatbot {threadId + 1}
           </Heading>
           <Flex gap={4} align="center">
-            {isThreadOne && (
-              <Tooltip
-                label="Add a third person to the conversation"
-                placement="bottom"
+            {isThreadOne && !isThirdPersonEnabled && (
+              <Button
+                leftIcon={<AddIcon />}
+                size="sm"
+                colorScheme="blue"
+                onClick={generateShareLink}
+                variant="solid"
+                fontFamily="Poppins"
               >
-                <IconButton
-                  aria-label="Add third person"
-                  icon={<AddIcon />}
-                  size="sm"
-                  colorScheme="blue"
-                  onClick={() => setIsThirdPersonEnabled(true)}
-                  isDisabled={isThirdPersonEnabled}
-                  variant="solid"
-                />
-              </Tooltip>
+                Invite Third Person
+              </Button>
             )}
             {isThreadTwo && (
               <FormControl w="auto">
