@@ -506,20 +506,6 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                 p={{ base: 3, md: 4 }}
                 borderRadius={isThreadThree ? "0" : "lg"}
                 boxShadow="sm"
-                borderLeft={
-                  message.feedback === "like"
-                    ? "4px solid"
-                    : message.feedback === "dislike"
-                    ? "4px solid"
-                    : "none"
-                }
-                borderColor={
-                  message.feedback === "like"
-                    ? "green.400"
-                    : message.feedback === "dislike"
-                    ? "red.400"
-                    : "transparent"
-                }
               >
                 <Text
                   {...threadStyle}
@@ -552,13 +538,25 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                     <HStack spacing={2} justify="flex-end">
                       <IconButton
                         aria-label="Like message"
-                        icon={<CheckIcon />}
+                        icon={
+                          <CheckIcon
+                            color={
+                              message.feedback === "like"
+                                ? isThreadThree
+                                  ? "green.500"
+                                  : `${getThreadColors().buttonColor}.500`
+                                : "gray.500"
+                            }
+                          />
+                        }
                         size="sm"
                         variant={
                           message.feedback === "like" ? "solid" : "ghost"
                         }
                         colorScheme={
-                          message.feedback === "like" ? "green" : "gray"
+                          isThreadThree
+                            ? "green"
+                            : getThreadColors().buttonColor
                         }
                         onClick={() => handleFeedback(index, "like")}
                       />
@@ -578,7 +576,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                     {isThreadThree &&
                       message.feedback === "dislike" &&
                       !message.feedbackText && (
-                        <HStack>
+                        <HStack width="100%">
                           <Input
                             id={`feedback-input-${threadId}-${index}`}
                             name={`feedback-input-${threadId}-${index}`}
@@ -587,6 +585,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                             placeholder={placeholders.feedbackInput}
                             size="sm"
                             bg="white"
+                            flex="1"
                             onKeyPress={(e) => {
                               if (e.key === "Enter") {
                                 handleFeedbackSubmit(index);

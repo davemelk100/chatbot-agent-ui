@@ -1,18 +1,15 @@
 export const threadDescriptions = [
   {
     title: "Multi-Person Chat",
-    description:
-      "Toggle between two and three-person chats.",
+    description: "Toggle between two and three-person chats.",
   },
   {
     title: "Model Selector",
-    description:
-      "Switch between GPT models to compare their responses.",
+    description: "Switch between GPT models to compare their responses.",
   },
   {
     title: "Feedback System",
-    description:
-      "Like or dislike responses and provide feedback.",
+    description: "Like or dislike responses and provide feedback.",
   },
   {
     title: "Image Upload",
@@ -37,7 +34,7 @@ export const errorMessages = {
 export const placeholders = {
   messageInput: "Type your message...",
   thirdPersonInput: "Third person's message...",
-  feedbackInput: "Why was this response not helpful?",
+  feedbackInput: "Please describe",
 };
 
 export const buttonLabels = {

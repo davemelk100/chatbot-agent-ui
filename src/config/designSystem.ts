@@ -150,7 +150,7 @@ export const threadColors: Record<string, ThreadColors> = {
     assistantBgDisliked: "red.100",
     thirdBg: colors.primary[300],
     borderColor: colors.primary[200],
-    buttonColor: "blue",
+    buttonColor: "green",
     textColor: colors.primary[700],
   },
 };
