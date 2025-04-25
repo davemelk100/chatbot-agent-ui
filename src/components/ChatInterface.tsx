@@ -1,17 +1,15 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Box,
   VStack,
   Input,
   Text,
-  useToast,
   Flex,
   IconButton,
   Heading,
   FormControl,
   Select,
   HStack,
-  Tooltip,
   Button,
   createStandaloneToast,
   Portal,
@@ -22,7 +20,6 @@ import {
   AddIcon,
   CheckIcon,
   NotAllowedIcon,
-  CopyIcon,
 } from "@chakra-ui/icons";
 import OpenAI from "openai";
 import {
@@ -30,7 +27,13 @@ import {
   placeholders,
   buttonLabels,
 } from "../config/textContent";
-import { theme, threadStyles, threadColors } from "../config/designSystem";
+import {
+  theme,
+  threadStyles,
+  threadColors,
+  fonts,
+} from "../config/designSystem";
+import ChatJoiner from "./ChatJoiner";
 
 interface Message {
   role: "user" | "assistant" | "third";
@@ -63,7 +66,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = createStandaloneToast();
-  const [shareLink, setShareLink] = useState<string>("");
+  const [showJoiner, setShowJoiner] = useState(false);
 
   const isThreadOne = threadId === 0;
   const isThreadTwo = threadId === 1;
@@ -102,6 +105,22 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
     apiKey: import.meta.env.VITE_OPENAI_API_KEY,
     dangerouslyAllowBrowser: true,
   });
+
+  // Check for chat ID in URL parameters
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("join");
+    if (id) {
+      setShowJoiner(true);
+    }
+  }, []);
+
+  const handleJoinChat = () => {
+    setShowJoiner(false);
+    setIsThirdPersonEnabled(true);
+    // Here you would typically load the existing chat messages
+    // For now, we'll just enable the third person mode
+  };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -351,10 +370,9 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
   };
 
   const generateShareLink = () => {
+    const id = `chat-${threadId}-${Date.now()}`;
     const baseUrl = window.location.origin;
-    const chatId = `chat-${threadId}-${Date.now()}`;
-    const link = `${baseUrl}?chat=${chatId}`;
-    setShareLink(link);
+    const link = `${baseUrl}?join=${id}`;
     navigator.clipboard.writeText(link);
 
     const modal = (
@@ -430,6 +448,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
       display="flex"
       flexDirection="column"
     >
+      {showJoiner && <ChatJoiner onJoin={handleJoinChat} />}
       <Box
         p={{ base: 3, md: 4 }}
         borderBottom="1px"
@@ -586,6 +605,21 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                             size="sm"
                             bg="white"
                             flex="1"
+                            fontFamily={
+                              isThreadThree
+                                ? fonts.body.tertiary
+                                : isThreadTwo
+                                ? fonts.body.primary
+                                : fonts.body.secondary
+                            }
+                            _placeholder={{
+                              fontFamily: isThreadThree
+                                ? fonts.body.tertiary
+                                : isThreadTwo
+                                ? fonts.body.primary
+                                : fonts.body.secondary,
+                              color: "gray.500",
+                            }}
                             onKeyPress={(e) => {
                               if (e.key === "Enter") {
                                 handleFeedbackSubmit(index);
@@ -602,7 +636,18 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                         </HStack>
                       )}
                     {message.feedbackText && (
-                      <Text fontSize="xs" color="red.500" fontStyle="italic">
+                      <Text
+                        fontSize="xs"
+                        color="red.500"
+                        fontStyle="italic"
+                        fontFamily={
+                          isThreadThree
+                            ? fonts.body.tertiary
+                            : isThreadTwo
+                            ? fonts.body.primary
+                            : fonts.body.secondary
+                        }
+                      >
                         Feedback: {message.feedbackText}
                       </Text>
                     )}
@@ -661,6 +706,21 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
               onChange={(e) => setInput(e.target.value)}
               placeholder={placeholders.messageInput}
               flex="1"
+              fontFamily={
+                isThreadThree
+                  ? fonts.body.tertiary
+                  : isThreadTwo
+                  ? fonts.body.primary
+                  : fonts.body.secondary
+              }
+              _placeholder={{
+                fontFamily: isThreadThree
+                  ? fonts.body.tertiary
+                  : isThreadTwo
+                  ? fonts.body.primary
+                  : fonts.body.secondary,
+                color: "gray.500",
+              }}
               onKeyPress={(e) => {
                 if (e.key === "Enter") {
                   handleSendMessage();
@@ -693,6 +753,21 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                 onChange={(e) => setThirdPersonInput(e.target.value)}
                 placeholder={placeholders.thirdPersonInput}
                 flex="1"
+                fontFamily={
+                  isThreadThree
+                    ? fonts.body.tertiary
+                    : isThreadTwo
+                    ? fonts.body.primary
+                    : fonts.body.secondary
+                }
+                _placeholder={{
+                  fontFamily: isThreadThree
+                    ? fonts.body.tertiary
+                    : isThreadTwo
+                    ? fonts.body.primary
+                    : fonts.body.secondary,
+                  color: "gray.500",
+                }}
                 onKeyPress={(e) => {
                   if (e.key === "Enter") {
                     handleThirdPersonMessage();

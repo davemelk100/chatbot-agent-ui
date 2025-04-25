@@ -6,6 +6,8 @@ import {
   useColorModeValue,
   Grid,
   GridItem,
+  Flex,
+  VStack,
 } from "@chakra-ui/react";
 import { Suspense } from "react";
 import { threadDescriptions, appTitle } from "./config/textContent";
@@ -41,35 +43,12 @@ function App() {
           >
             {appTitle}
           </Heading>
-          <Grid
-            templateColumns={{
-              base: "1fr",
-              sm: "repeat(2, 1fr)",
-              lg: "repeat(2, 1fr)",
-              xl: "repeat(3, 1fr)",
-            }}
-            gap={{ base: theme.spacing.md, md: theme.spacing.lg }}
-            templateAreas={{
-              base: `
-                "thread1"
-                "thread2"
-                "thread3"
-              `,
-              sm: `
-                "thread1 thread2"
-                "thread3 ."
-              `,
-              lg: `
-                "thread1 thread2"
-                "thread3 ."
-              `,
-              xl: `
-                "thread1 thread2 thread3"
-              `,
-            }}
+          <VStack
+            spacing={{ base: theme.spacing.md, md: theme.spacing.lg }}
+            align="stretch"
           >
             {[0, 1, 2].map((threadId) => (
-              <GridItem key={threadId} gridArea={`thread${threadId + 1}`}>
+              <Box key={threadId} w="100%">
                 <Box mb={theme.spacing.md}>
                   <Heading
                     size="sm"
@@ -90,14 +69,14 @@ function App() {
                 <Suspense fallback={<Box>Loading chat interface...</Box>}>
                   <ChatInterface threadId={threadId} />
                 </Suspense>
-              </GridItem>
+                <Box mt="2rem">
+                  <Suspense fallback={<Box>Loading design system...</Box>}>
+                    <DesignSystem threadId={threadId} />
+                  </Suspense>
+                </Box>
+              </Box>
             ))}
-          </Grid>
-          <Box mt="2rem">
-            <Suspense fallback={<Box>Loading design system...</Box>}>
-              <DesignSystem />
-            </Suspense>
-          </Box>
+          </VStack>
         </Box>
       </Box>
     </ChakraProvider>
