@@ -6,11 +6,10 @@ import {
   useColorModeValue,
   Grid,
   GridItem,
-  Flex,
   VStack,
 } from "@chakra-ui/react";
 import { Suspense } from "react";
-import { threadDescriptions, appTitle } from "./config/textContent";
+import { threadDescriptions } from "./config/textContent";
 import { theme } from "./config/designSystem";
 import { ChatInterface, DesignSystem } from "./components/lazy";
 
@@ -29,44 +28,60 @@ function App() {
       <Box
         minH="100vh"
         bg={bgColor}
-        p={{ base: theme.spacing.md, md: theme.spacing.lg }}
+        p={{
+          base: theme.spacing.sm,
+          sm: theme.spacing.md,
+          md: theme.spacing.lg,
+        }}
       >
-        <Box maxW="1600px" mx="auto">
-          <Heading
-            as="h1"
-            size={{ base: "lg", md: "xl" }}
-            mb={{ base: theme.spacing.lg, md: theme.spacing.xl }}
+        <Box maxW="1600px" mx="auto" px={{ base: 2, sm: 4, md: 6 }}>
+          <Text
+            position="absolute"
+            top={{ base: "12px", sm: "16px" }}
+            left={{ base: "12px", sm: "16px" }}
+            fontSize={{ base: "xs", sm: "sm" }}
             color={textColor}
-            fontFamily={theme.fonts.heading.primary}
-            fontWeight="bold"
-            textAlign="left"
+            opacity={0.7}
+            fontFamily={theme.fonts.body.primary}
           >
-            {appTitle}
-          </Heading>
+            Agent UI Lab
+          </Text>
           <VStack
-            spacing={{ base: theme.spacing.md, md: theme.spacing.lg }}
+            spacing={{
+              base: theme.spacing.sm,
+              sm: theme.spacing.md,
+              md: theme.spacing.lg,
+            }}
             align="stretch"
+            mt={{ base: "32px", sm: "40px" }}
           >
             {[0, 1, 2].map((threadId) => (
               <Box key={threadId} w="100%">
-                <Box mb={theme.spacing.md}>
+                <Box mb={{ base: theme.spacing.sm, sm: theme.spacing.md }}>
                   <Heading
-                    size="sm"
+                    size={{ base: "xs", sm: "sm" }}
                     color={textColor}
-                    mb={theme.spacing.xs}
+                    mb={{ base: theme.spacing.xs, sm: theme.spacing.xs }}
                     fontFamily={theme.fonts.heading.primary}
                   >
                     {threadDescriptions[threadId].title}
                   </Heading>
                   <Text
-                    fontSize="sm"
+                    fontSize={{ base: "xs", sm: "sm" }}
                     color={theme.colors.secondary[600]}
                     fontFamily={theme.fonts.body.primary}
                   >
                     {threadDescriptions[threadId].description}
                   </Text>
                 </Box>
-                <Grid templateColumns={{ base: "1fr", md: "1fr 3fr" }} gap={6}>
+                <Grid
+                  templateColumns={{
+                    base: "1fr",
+                    sm: "1fr 2fr",
+                    md: "1fr 3fr",
+                  }}
+                  gap={{ base: 4, sm: 6 }}
+                >
                   <GridItem>
                     <Suspense fallback={<div>Loading...</div>}>
                       <ChatInterface threadId={threadId} />

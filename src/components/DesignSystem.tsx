@@ -1,28 +1,14 @@
 import {
   Box,
   VStack,
-  HStack,
   Text,
   Heading,
   Grid,
-  GridItem,
-  useColorModeValue,
-  Code,
   Button,
   Input,
-  IconButton,
-  FormControl,
   Select,
 } from "@chakra-ui/react";
-import { ChatIcon, AddIcon, CheckIcon, NotAllowedIcon } from "@chakra-ui/icons";
-import {
-  theme,
-  fonts,
-  threadStyles,
-  threadColors,
-} from "../config/designSystem";
-import { generateFigmaTokens } from "../utils/convertToFigmaTokens";
-import { buttonLabels, placeholders } from "../config/textContent";
+import { theme, threadColors } from "../config/designSystem";
 
 interface DesignSystemProps {
   threadId: number;
@@ -31,197 +17,147 @@ interface DesignSystemProps {
 type ThreadKey = "thread1" | "thread2" | "thread3";
 
 export default function DesignSystem({ threadId }: DesignSystemProps) {
-  const borderColor = useColorModeValue("gray.200", "gray.700");
-  const cardBg = useColorModeValue("white", "gray.700");
-  const bgColor = useColorModeValue(
-    theme.colors.secondary[100],
-    theme.colors.secondary[900]
-  );
-  const textColor = useColorModeValue(
-    theme.colors.secondary[800],
-    theme.colors.secondary[100]
-  );
-
-  const handleExport = () => {
-    generateFigmaTokens();
-  };
-
   const threadKey: ThreadKey =
     threadId === 0 ? "thread1" : threadId === 1 ? "thread2" : "thread3";
   const colors = threadColors[threadKey];
-  const style = threadStyles[threadKey];
 
   return (
     <Box
       w="100%"
       h="100%"
       bg={colors.bg}
+      p={{ base: 2, sm: 3, md: 4 }}
       borderRadius={
-        threadId === 0 || threadId === 1
-          ? theme.borderRadius.none
-          : theme.borderRadius.lg
+        threadId === 2 ? theme.borderRadius.xl : theme.borderRadius.lg
       }
       boxShadow={
-        threadId === 0
-          ? theme.shadows.none
-          : threadId === 1
+        threadId === 1
           ? theme.shadows.sm
-          : theme.shadows.md
+          : threadId === 2
+          ? theme.shadows.md
+          : theme.shadows.none
       }
-      overflow="hidden"
-      p={4}
-      display="flex"
-      flexDirection="column"
+      overflowY="auto"
     >
-      <Heading size="sm" mb={4} fontFamily={theme.fonts.heading.primary}>
-        Design System
-      </Heading>
-
-      <Box
-        flex="1"
-        p={4}
-        borderWidth="1px"
-        borderRadius="xl"
-        borderColor={borderColor}
-        bg={cardBg}
-        boxShadow="sm"
-        overflowY="auto"
-      >
-        <VStack spacing={6} align="stretch">
-          {/* Typography Section */}
-          <Box>
-            <Heading size="sm" mb={2} fontFamily={theme.fonts.heading.primary}>
-              Typography
-            </Heading>
-            <Grid templateColumns="repeat(2, 1fr)" gap={4}>
-              <Box>
-                <Heading as="h1" size="md" {...style} mb={1}>
-                  Heading 1
-                </Heading>
-                <Code fontSize="xs" colorScheme="gray">
-                  {`size={{ base: "2xl", md: "4xl" }}`}
-                </Code>
-              </Box>
-              <Box>
-                <Heading as="h2" size="sm" {...style} mb={1}>
-                  Heading 2
-                </Heading>
-                <Code fontSize="xs" colorScheme="gray">
-                  {`size={{ base: "xl", md: "3xl" }}`}
-                </Code>
-              </Box>
-            </Grid>
-          </Box>
-
-          {/* Colors Section */}
-          <Box>
-            <Heading size="sm" mb={2} fontFamily={theme.fonts.heading.primary}>
-              Colors
-            </Heading>
-            <Grid templateColumns="repeat(4, 1fr)" gap={2}>
-              {Object.entries(colors).map(([name, value]) => (
-                <Box key={name}>
-                  <HStack spacing={2} mb={1}>
-                    <Box
-                      w="20px"
-                      h="20px"
-                      borderRadius="sm"
-                      bg={value}
-                      borderWidth="1px"
-                      borderColor={borderColor}
-                    />
-                    <Text fontSize="xs" fontFamily={theme.fonts.body.primary}>
-                      {name}
-                    </Text>
-                  </HStack>
-                </Box>
-              ))}
-            </Grid>
-          </Box>
-
-          {/* Buttons Section */}
-          <Box>
-            <Heading size="sm" mb={2} fontFamily={theme.fonts.heading.primary}>
-              Buttons
-            </Heading>
-            <Grid templateColumns="repeat(4, 1fr)" gap={4}>
-              {threadId === 0 && (
-                <Button
-                  leftIcon={<AddIcon />}
-                  colorScheme={colors.buttonColor}
-                  size="sm"
-                  fontFamily={style.fontFamily}
+      <VStack spacing={{ base: 3, sm: 4, md: 6 }} align="stretch">
+        <Box>
+          <Heading
+            size={{ base: "xs", sm: "sm", md: "md" }}
+            color={colors.textColor}
+            mb={{ base: 2, sm: 3 }}
+            fontFamily={theme.fonts.heading.primary}
+          >
+            Colors
+          </Heading>
+          <Grid
+            templateColumns={{
+              base: "repeat(2, 1fr)",
+              sm: "repeat(3, 1fr)",
+              md: "repeat(4, 1fr)",
+            }}
+            gap={{ base: 2, sm: 3, md: 4 }}
+          >
+            {Object.entries(theme.colors.primary).map(([name, value]) => (
+              <Box key={name}>
+                <Box
+                  w="100%"
+                  h={{ base: "60px", sm: "80px", md: "100px" }}
+                  bg={value}
+                  borderRadius="md"
+                  mb={1}
+                />
+                <Text
+                  fontSize={{ base: "xs", sm: "sm" }}
+                  color={colors.textColor}
+                  fontFamily={theme.fonts.body.primary}
                 >
-                  Invite
-                </Button>
-              )}
-              {threadId === 1 && (
-                <FormControl>
-                  <Select
-                    size="sm"
-                    fontFamily={style.fontFamily}
-                    colorScheme={colors.buttonColor}
-                  >
-                    <option value="gpt-3.5-turbo">GPT-3.5</option>
-                    <option value="gpt-4">GPT-4</option>
-                  </Select>
-                </FormControl>
-              )}
-              <Button
-                leftIcon={<ChatIcon />}
-                colorScheme={colors.buttonColor}
-                size="sm"
-                fontFamily={style.fontFamily}
-              >
-                Send
-              </Button>
-              <HStack spacing={1}>
-                <IconButton
-                  aria-label="Like"
-                  icon={<CheckIcon />}
-                  colorScheme="green"
-                  size="sm"
-                  fontFamily={style.fontFamily}
-                />
-                <IconButton
-                  aria-label="Dislike"
-                  icon={<NotAllowedIcon />}
-                  colorScheme="red"
-                  size="sm"
-                  fontFamily={style.fontFamily}
-                />
-              </HStack>
-            </Grid>
-          </Box>
+                  {name}
+                </Text>
+              </Box>
+            ))}
+          </Grid>
+        </Box>
 
-          {/* Inputs Section */}
-          <Box>
-            <Heading size="sm" mb={2} fontFamily={theme.fonts.heading.primary}>
-              Inputs
-            </Heading>
-            <Grid templateColumns="repeat(2, 1fr)" gap={4}>
-              <Input
-                placeholder={placeholders.messageInput}
-                size="sm"
-                fontFamily={style.fontFamily}
-                _placeholder={{
-                  fontFamily: style.fontFamily,
-                  color: "gray.500",
-                }}
-              />
-              <Input
-                placeholder={placeholders.thirdPersonInput}
-                size="sm"
-                fontFamily={style.fontFamily}
-                _placeholder={{
-                  fontFamily: style.fontFamily,
-                  color: "gray.500",
-                }}
-              />
-            </Grid>
-          </Box>
-        </VStack>
-      </Box>
+        <Box>
+          <Heading
+            size={{ base: "xs", sm: "sm", md: "md" }}
+            color={colors.textColor}
+            mb={{ base: 2, sm: 3 }}
+            fontFamily={theme.fonts.heading.primary}
+          >
+            Typography
+          </Heading>
+          <VStack spacing={{ base: 2, sm: 3, md: 4 }} align="stretch">
+            <Box>
+              <Text
+                fontSize={{ base: "xs", sm: "sm" }}
+                color={theme.colors.secondary[600]}
+                mb={1}
+                fontFamily={theme.fonts.body.primary}
+              >
+                Heading
+              </Text>
+              <Heading
+                size={{ base: "sm", sm: "md", md: "lg" }}
+                color={colors.textColor}
+                fontFamily={theme.fonts.heading.primary}
+              >
+                The quick brown fox
+              </Heading>
+            </Box>
+            <Box>
+              <Text
+                fontSize={{ base: "xs", sm: "sm" }}
+                color={theme.colors.secondary[600]}
+                mb={1}
+                fontFamily={theme.fonts.body.primary}
+              >
+                Body
+              </Text>
+              <Text
+                fontSize={{ base: "sm", sm: "md" }}
+                color={colors.textColor}
+                fontFamily={theme.fonts.body.primary}
+              >
+                The quick brown fox jumps over the lazy dog
+              </Text>
+            </Box>
+          </VStack>
+        </Box>
+
+        <Box>
+          <Heading
+            size={{ base: "xs", sm: "sm", md: "md" }}
+            color={colors.textColor}
+            mb={{ base: 2, sm: 3 }}
+            fontFamily={theme.fonts.heading.primary}
+          >
+            Components
+          </Heading>
+          <VStack spacing={{ base: 2, sm: 3, md: 4 }} align="stretch">
+            <Button
+              size={{ base: "xs", sm: "sm", md: "md" }}
+              colorScheme={colors.buttonColor}
+              fontFamily={theme.fonts.body.primary}
+            >
+              Button
+            </Button>
+            <Input
+              placeholder="Input"
+              size={{ base: "xs", sm: "sm", md: "md" }}
+              fontFamily={theme.fonts.body.primary}
+            />
+            <Select
+              placeholder="Select"
+              size={{ base: "xs", sm: "sm", md: "md" }}
+              fontFamily={theme.fonts.body.primary}
+            >
+              <option value="option1">Option 1</option>
+              <option value="option2">Option 2</option>
+            </Select>
+          </VStack>
+        </Box>
+      </VStack>
     </Box>
   );
 }
