@@ -65,6 +65,7 @@ export default function DesignSystem({ threadId }: DesignSystemProps) {
                   bg={value}
                   borderRadius="md"
                   mb={1}
+                  boxShadow="0 2px 4px rgba(0, 0, 0, 0.1)"
                 />
                 <Text
                   fontSize={{ base: "xs", sm: "sm" }}
