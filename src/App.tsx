@@ -66,14 +66,18 @@ function App() {
                     {threadDescriptions[threadId].description}
                   </Text>
                 </Box>
-                <Suspense fallback={<Box>Loading chat interface...</Box>}>
-                  <ChatInterface threadId={threadId} />
-                </Suspense>
-                <Box mt="2rem">
-                  <Suspense fallback={<Box>Loading design system...</Box>}>
-                    <DesignSystem threadId={threadId} />
-                  </Suspense>
-                </Box>
+                <Grid templateColumns={{ base: "1fr", md: "1fr 3fr" }} gap={6}>
+                  <GridItem>
+                    <Suspense fallback={<div>Loading...</div>}>
+                      <ChatInterface threadId={threadId} />
+                    </Suspense>
+                  </GridItem>
+                  <GridItem>
+                    <Suspense fallback={<div>Loading...</div>}>
+                      <DesignSystem threadId={threadId} />
+                    </Suspense>
+                  </GridItem>
+                </Grid>
               </Box>
             ))}
           </VStack>

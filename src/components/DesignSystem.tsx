@@ -54,6 +54,7 @@ export default function DesignSystem({ threadId }: DesignSystemProps) {
   return (
     <Box
       w="100%"
+      h="100%"
       bg={colors.bg}
       borderRadius={
         threadId === 0 || threadId === 1
@@ -61,230 +62,164 @@ export default function DesignSystem({ threadId }: DesignSystemProps) {
           : theme.borderRadius.lg
       }
       boxShadow={
-        threadId === 0 || threadId === 1 ? theme.shadows.none : theme.shadows.md
+        threadId === 0
+          ? theme.shadows.none
+          : threadId === 1
+          ? theme.shadows.sm
+          : theme.shadows.md
       }
       overflow="hidden"
       p={4}
+      display="flex"
+      flexDirection="column"
     >
       <Heading size="sm" mb={4} fontFamily={theme.fonts.heading.primary}>
         Design System
       </Heading>
 
-      {/* Typography Section */}
       <Box
-        p={6}
+        flex="1"
+        p={4}
         borderWidth="1px"
         borderRadius="xl"
         borderColor={borderColor}
         bg={cardBg}
         boxShadow="sm"
-        mb={6}
+        overflowY="auto"
       >
-        <Heading size="sm" mb={4} fontFamily={theme.fonts.heading.primary}>
-          Typography
-        </Heading>
-        <VStack align="stretch" spacing={6}>
+        <VStack spacing={6} align="stretch">
+          {/* Typography Section */}
           <Box>
-            <Heading
-              as="h1"
-              size={{ base: "2xl", md: "4xl" }}
-              {...style}
-              mb={2}
-            >
-              Heading 1 (2xl/4xl)
+            <Heading size="sm" mb={2} fontFamily={theme.fonts.heading.primary}>
+              Typography
             </Heading>
-            <Code
-              fontSize="sm"
-              colorScheme="gray"
-              fontFamily={theme.fonts.body.primary}
-            >
-              {`size={{ base: "2xl", md: "4xl" }}`}
-            </Code>
+            <Grid templateColumns="repeat(2, 1fr)" gap={4}>
+              <Box>
+                <Heading as="h1" size="md" {...style} mb={1}>
+                  Heading 1
+                </Heading>
+                <Code fontSize="xs" colorScheme="gray">
+                  {`size={{ base: "2xl", md: "4xl" }}`}
+                </Code>
+              </Box>
+              <Box>
+                <Heading as="h2" size="sm" {...style} mb={1}>
+                  Heading 2
+                </Heading>
+                <Code fontSize="xs" colorScheme="gray">
+                  {`size={{ base: "xl", md: "3xl" }}`}
+                </Code>
+              </Box>
+            </Grid>
           </Box>
-          <Box>
-            <Heading as="h2" size={{ base: "xl", md: "3xl" }} {...style} mb={2}>
-              Heading 2 (xl/3xl)
-            </Heading>
-            <Code
-              fontSize="sm"
-              colorScheme="gray"
-              fontFamily={theme.fonts.body.primary}
-            >
-              {`size={{ base: "xl", md: "3xl" }}`}
-            </Code>
-          </Box>
-          <Box>
-            <Heading as="h3" size={{ base: "lg", md: "2xl" }} {...style} mb={2}>
-              Heading 3 (lg/2xl)
-            </Heading>
-            <Code
-              fontSize="sm"
-              colorScheme="gray"
-              fontFamily={theme.fonts.body.primary}
-            >
-              {`size={{ base: "lg", md: "2xl" }}`}
-            </Code>
-          </Box>
-          <Box>
-            <Heading as="h4" size={{ base: "lg", md: "2xl" }} {...style} mb={2}>
-              Heading 4 (lg/2xl)
-            </Heading>
-            <Code
-              fontSize="sm"
-              colorScheme="gray"
-              fontFamily={theme.fonts.body.primary}
-            >
-              {`size={{ base: "lg", md: "2xl" }}`}
-            </Code>
-          </Box>
-        </VStack>
-      </Box>
 
-      {/* Colors Section */}
-      <Box
-        p={6}
-        borderWidth="1px"
-        borderRadius="xl"
-        borderColor={borderColor}
-        bg={cardBg}
-        boxShadow="sm"
-        mb={6}
-      >
-        <Heading size="sm" mb={4} fontFamily={theme.fonts.heading.primary}>
-          Colors
-        </Heading>
-        <VStack align="stretch" spacing={4}>
-          {Object.entries(colors).map(([name, value]) => (
-            <Box key={name}>
-              <HStack spacing={3} mb={1}>
-                <Box
-                  w="32px"
-                  h="32px"
-                  borderRadius="md"
-                  bg={value}
-                  borderWidth="1px"
-                  borderColor={borderColor}
-                  boxShadow="sm"
-                />
-                <Box>
-                  <Text
-                    fontWeight="medium"
-                    fontSize="sm"
-                    fontFamily={theme.fonts.body.primary}
-                  >
-                    {name}
-                  </Text>
-                  <Code
-                    fontSize="xs"
-                    colorScheme="gray"
-                    fontFamily={theme.fonts.body.primary}
-                  >
-                    {value}
-                  </Code>
+          {/* Colors Section */}
+          <Box>
+            <Heading size="sm" mb={2} fontFamily={theme.fonts.heading.primary}>
+              Colors
+            </Heading>
+            <Grid templateColumns="repeat(4, 1fr)" gap={2}>
+              {Object.entries(colors).map(([name, value]) => (
+                <Box key={name}>
+                  <HStack spacing={2} mb={1}>
+                    <Box
+                      w="20px"
+                      h="20px"
+                      borderRadius="sm"
+                      bg={value}
+                      borderWidth="1px"
+                      borderColor={borderColor}
+                    />
+                    <Text fontSize="xs" fontFamily={theme.fonts.body.primary}>
+                      {name}
+                    </Text>
+                  </HStack>
                 </Box>
-              </HStack>
-            </Box>
-          ))}
-        </VStack>
-      </Box>
+              ))}
+            </Grid>
+          </Box>
 
-      {/* Buttons Section */}
-      <Box
-        p={6}
-        borderWidth="1px"
-        borderRadius="xl"
-        borderColor={borderColor}
-        bg={cardBg}
-        boxShadow="sm"
-        mb={6}
-      >
-        <Heading size="sm" mb={4} fontFamily={theme.fonts.heading.primary}>
-          Buttons
-        </Heading>
-        <VStack align="start" spacing={4}>
-          {threadId === 0 && (
-            <Button
-              leftIcon={<AddIcon />}
-              colorScheme={colors.buttonColor}
-              fontFamily={style.fontFamily}
-            >
-              Invite Third Person
-            </Button>
-          )}
-          {threadId === 1 && (
-            <FormControl>
-              <Select
+          {/* Buttons Section */}
+          <Box>
+            <Heading size="sm" mb={2} fontFamily={theme.fonts.heading.primary}>
+              Buttons
+            </Heading>
+            <Grid templateColumns="repeat(4, 1fr)" gap={4}>
+              {threadId === 0 && (
+                <Button
+                  leftIcon={<AddIcon />}
+                  colorScheme={colors.buttonColor}
+                  size="sm"
+                  fontFamily={style.fontFamily}
+                >
+                  Invite
+                </Button>
+              )}
+              {threadId === 1 && (
+                <FormControl>
+                  <Select
+                    size="sm"
+                    fontFamily={style.fontFamily}
+                    colorScheme={colors.buttonColor}
+                  >
+                    <option value="gpt-3.5-turbo">GPT-3.5</option>
+                    <option value="gpt-4">GPT-4</option>
+                  </Select>
+                </FormControl>
+              )}
+              <Button
+                leftIcon={<ChatIcon />}
+                colorScheme={colors.buttonColor}
                 size="sm"
                 fontFamily={style.fontFamily}
-                colorScheme={colors.buttonColor}
               >
-                <option value="gpt-3.5-turbo">GPT-3.5</option>
-                <option value="gpt-4">GPT-4</option>
-                <option value="gpt-4-turbo">GPT-4 Turbo</option>
-              </Select>
-            </FormControl>
-          )}
-          <Button
-            leftIcon={<ChatIcon />}
-            colorScheme={colors.buttonColor}
-            fontFamily={style.fontFamily}
-          >
-            Send Message
-          </Button>
-          <HStack spacing={2}>
-            <IconButton
-              aria-label="Like"
-              icon={<CheckIcon />}
-              colorScheme="green"
-              fontFamily={style.fontFamily}
-            />
-            <IconButton
-              aria-label="Dislike"
-              icon={<NotAllowedIcon />}
-              colorScheme="red"
-              fontFamily={style.fontFamily}
-            />
-          </HStack>
-        </VStack>
-      </Box>
+                Send
+              </Button>
+              <HStack spacing={1}>
+                <IconButton
+                  aria-label="Like"
+                  icon={<CheckIcon />}
+                  colorScheme="green"
+                  size="sm"
+                  fontFamily={style.fontFamily}
+                />
+                <IconButton
+                  aria-label="Dislike"
+                  icon={<NotAllowedIcon />}
+                  colorScheme="red"
+                  size="sm"
+                  fontFamily={style.fontFamily}
+                />
+              </HStack>
+            </Grid>
+          </Box>
 
-      {/* Inputs Section */}
-      <Box
-        p={6}
-        borderWidth="1px"
-        borderRadius="xl"
-        borderColor={borderColor}
-        bg={cardBg}
-        boxShadow="sm"
-      >
-        <Heading size="sm" mb={4} fontFamily={theme.fonts.heading.primary}>
-          Inputs
-        </Heading>
-        <VStack align="stretch" spacing={4}>
-          <Input
-            placeholder={placeholders.messageInput}
-            fontFamily={style.fontFamily}
-            _placeholder={{
-              fontFamily: style.fontFamily,
-              color: "gray.500",
-            }}
-          />
-          <Input
-            placeholder={placeholders.thirdPersonInput}
-            fontFamily={style.fontFamily}
-            _placeholder={{
-              fontFamily: style.fontFamily,
-              color: "gray.500",
-            }}
-          />
-          <Input
-            placeholder={placeholders.feedbackInput}
-            fontFamily={style.fontFamily}
-            _placeholder={{
-              fontFamily: style.fontFamily,
-              color: "gray.500",
-            }}
-          />
+          {/* Inputs Section */}
+          <Box>
+            <Heading size="sm" mb={2} fontFamily={theme.fonts.heading.primary}>
+              Inputs
+            </Heading>
+            <Grid templateColumns="repeat(2, 1fr)" gap={4}>
+              <Input
+                placeholder={placeholders.messageInput}
+                size="sm"
+                fontFamily={style.fontFamily}
+                _placeholder={{
+                  fontFamily: style.fontFamily,
+                  color: "gray.500",
+                }}
+              />
+              <Input
+                placeholder={placeholders.thirdPersonInput}
+                size="sm"
+                fontFamily={style.fontFamily}
+                _placeholder={{
+                  fontFamily: style.fontFamily,
+                  color: "gray.500",
+                }}
+              />
+            </Grid>
+          </Box>
         </VStack>
       </Box>
     </Box>

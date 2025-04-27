@@ -434,16 +434,10 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
   return (
     <Box
       w="100%"
-      h={{ base: "60vh", md: "75vh" }}
+      h="100%"
       bg={colors.bg}
-      borderRadius={
-        threadId === 1 || threadId === 2
-          ? theme.borderRadius.none
-          : theme.borderRadius.lg
-      }
-      boxShadow={
-        threadId === 1 || threadId === 2 ? theme.shadows.none : theme.shadows.md
-      }
+      borderRadius={threadId === 1 ? "0" : "lg"}
+      boxShadow={theme.shadows.sm}
       overflow="hidden"
       display="flex"
       flexDirection="column"
