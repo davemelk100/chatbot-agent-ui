@@ -57,7 +57,7 @@ export default function DesignSystem({ threadId }: DesignSystemProps) {
             }}
             gap={{ base: 2, sm: 3, md: 4 }}
           >
-            {Object.entries(theme.colors.primary).map(([name, value]) => (
+            {Object.entries(colors).map(([name, value]) => (
               <Box key={name}>
                 <Box
                   w="100%"
