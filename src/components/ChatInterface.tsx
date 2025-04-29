@@ -370,65 +370,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
   };
 
   const generateShareLink = () => {
-    const id = `chat-${threadId}-${Date.now()}`;
-    const baseUrl = window.location.origin;
-    const link = `${baseUrl}?join=${id}`;
-    navigator.clipboard.writeText(link);
-
-    const modal = (
-      <Portal>
-        <Box
-          position="fixed"
-          top="0"
-          left="0"
-          right="0"
-          bottom="0"
-          bg="rgba(0, 0, 0, 0.4)"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          zIndex="toast"
-          animation="fadeIn 0.3s ease-in-out"
-          css={{
-            "@keyframes fadeIn": {
-              "0%": {
-                opacity: 0,
-              },
-              "100%": {
-                opacity: 1,
-              },
-            },
-          }}
-        >
-          <Box
-            bg="white"
-            width="500px"
-            borderRadius="8px"
-            boxShadow="0 4px 6px rgba(0, 0, 0, 0.1)"
-            p={8}
-            animation="fadeIn 0.3s ease-in-out"
-          >
-            <Flex align="center" gap={4}>
-              <CheckIcon boxSize="24px" color="green.500" />
-              <Box>
-                <Text fontFamily="Poppins" fontSize="18px" fontWeight="medium">
-                  Link Copied
-                </Text>
-                <Text fontFamily="Poppins" fontSize="16px" color="gray.600">
-                  Share this link with the third person to join the chat
-                </Text>
-              </Box>
-            </Flex>
-          </Box>
-        </Box>
-      </Portal>
-    );
-
-    toast({
-      render: () => modal,
-      duration: 3000,
-      isClosable: true,
-    });
+    setIsThirdPersonEnabled(true);
   };
 
   return (
