@@ -20,6 +20,11 @@ import {
   AddIcon,
   CheckIcon,
   NotAllowedIcon,
+  SettingsIcon,
+  TriangleUpIcon,
+  TriangleDownIcon,
+  AddIcon as UserAddIcon,
+  ArrowUpIcon,
 } from "@chakra-ui/icons";
 import OpenAI from "openai";
 import {
@@ -41,6 +46,7 @@ interface Message {
   feedback?: "like" | "dislike" | null;
   feedbackText?: string;
   imageUrl?: string;
+  model: LLMModel;
 }
 
 interface ChatInterfaceProps {
@@ -170,6 +176,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
       role: "user",
       content: input,
       imageUrl: imagePreview || undefined,
+      model: selectedImage ? "gpt-4-vision-preview" : "gpt-3.5-turbo",
     };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
@@ -194,7 +201,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
       ];
 
       const model: LLMModel = selectedImage
-        ? "gpt-4" // Fallback to GPT-4 if vision isn't available
+        ? "gpt-4-vision-preview"
         : isThreadTwo
         ? selectedModel
         : isThreadThree
@@ -245,6 +252,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
       const assistantMessage: Message = {
         role: "assistant",
         content: completion.choices[0].message.content || "",
+        model,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
@@ -285,6 +293,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
     const thirdPersonMessage: Message = {
       role: "third",
       content: thirdPersonInput,
+      model: isThreadTwo ? selectedModel : "gpt-3.5-turbo",
     };
     setMessages((prev) => [...prev, thirdPersonMessage]);
     setThirdPersonInput("");
@@ -313,6 +322,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
       const assistantMessage: Message = {
         role: "assistant",
         content: completion.choices[0].message.content || "",
+        model: isThreadTwo ? selectedModel : "gpt-3.5-turbo",
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
@@ -401,7 +411,12 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
             {...threadStyle}
             color={isThreadThree ? colors.bg : colors.textColor}
           >
-            Chatbot {threadId + 1}
+            <Flex align="center" gap={2}>
+              {isThreadOne && <UserAddIcon />}
+              {isThreadTwo && <SettingsIcon />}
+              {isThreadThree && <ArrowUpIcon />}
+              Chatbot {threadId + 1}
+            </Flex>
           </Heading>
           <Flex gap={{ base: 2, sm: 4 }} align="center">
             {isThreadOne && !isThirdPersonEnabled && (
@@ -662,6 +677,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
               size={{ base: "xs", sm: "sm" }}
               bg={getInputBgColor()}
               borderColor={colors.borderColor}
+              borderWidth="1px"
               borderRadius={isThreadTwo ? "0" : "md"}
               _hover={{ borderColor: colors.borderColor }}
               _focus={{ borderColor: colors.borderColor }}
@@ -709,6 +725,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                 fontSize={{ base: "xs", sm: "sm", md: "md" }}
                 bg="white"
                 borderColor={colors.borderColor}
+                borderWidth="1px"
                 borderRadius={isThreadTwo ? "0" : "md"}
                 _hover={{ borderColor: colors.borderColor }}
                 _focus={{ borderColor: colors.borderColor }}
