@@ -1,13 +1,4 @@
-import {
-  Box,
-  VStack,
-  Text,
-  Heading,
-  Grid,
-  Button,
-  Input,
-  Select,
-} from "@chakra-ui/react";
+import { Box, VStack, Text, Heading, Grid } from "@chakra-ui/react";
 import { theme, threadColors } from "../config/designSystem";
 
 interface DesignSystemProps {
@@ -51,17 +42,17 @@ export default function DesignSystem({ threadId }: DesignSystemProps) {
           </Heading>
           <Grid
             templateColumns={{
-              base: "repeat(2, 1fr)",
-              sm: "repeat(3, 1fr)",
-              md: "repeat(4, 1fr)",
+              base: "repeat(8, 1fr)",
+              sm: "repeat(8, 1fr)",
+              md: "repeat(8, 1fr)",
             }}
-            gap={{ base: 2, sm: 3, md: 4 }}
+            gap={{ base: 1, sm: 2, md: 3 }}
           >
             {Object.entries(colors).map(([name, value]) => (
-              <Box key={name}>
+              <Box key={name} gridColumn="span 1">
                 <Box
                   w="100%"
-                  h={{ base: "60px", sm: "80px", md: "100px" }}
+                  h={{ base: "30px", sm: "40px", md: "50px" }}
                   bg={value}
                   borderRadius="md"
                   mb={1}
@@ -123,39 +114,6 @@ export default function DesignSystem({ threadId }: DesignSystemProps) {
                 The quick brown fox jumps over the lazy dog
               </Text>
             </Box>
-          </VStack>
-        </Box>
-
-        <Box>
-          <Heading
-            size={{ base: "xs", sm: "sm", md: "md" }}
-            color={colors.textColor}
-            mb={{ base: 2, sm: 3 }}
-            fontFamily={theme.fonts.heading.primary}
-          >
-            Components
-          </Heading>
-          <VStack spacing={{ base: 2, sm: 3, md: 4 }} align="stretch">
-            <Button
-              size={{ base: "xs", sm: "sm", md: "md" }}
-              colorScheme={colors.buttonColor}
-              fontFamily={theme.fonts.body.primary}
-            >
-              Button
-            </Button>
-            <Input
-              placeholder="Input"
-              size={{ base: "xs", sm: "sm", md: "md" }}
-              fontFamily={theme.fonts.body.primary}
-            />
-            <Select
-              placeholder="Select"
-              size={{ base: "xs", sm: "sm", md: "md" }}
-              fontFamily={theme.fonts.body.primary}
-            >
-              <option value="option1">Option 1</option>
-              <option value="option2">Option 2</option>
-            </Select>
           </VStack>
         </Box>
       </VStack>
