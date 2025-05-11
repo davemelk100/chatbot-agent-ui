@@ -35,15 +35,15 @@ export const colors = {
 export const fonts = {
   heading: {
     primary: "'Avenir', sans-serif",
-    secondary: "'Poppins', sans-serif",
-    tertiary: "'DM Sans', sans-serif",
-    quaternary: "Helvetica, Arial, sans-serif",
+    secondary: "'Avenir', sans-serif",
+    tertiary: "'Avenir', sans-serif",
+    quaternary: "'Avenir', sans-serif",
   },
   body: {
     primary: "'Avenir', sans-serif",
-    secondary: "'Poppins', sans-serif",
-    tertiary: "'DM Sans', sans-serif",
-    quaternary: "Helvetica, Arial, sans-serif",
+    secondary: "'Avenir', sans-serif",
+    tertiary: "'Avenir', sans-serif",
+    quaternary: "'Avenir', sans-serif",
   },
 };
 
@@ -93,36 +93,6 @@ export const borderRadius = {
   full: "9999px",
 };
 
-export const threadStyles = {
-  thread1: {
-    fontFamily: fonts.body.secondary,
-    fontWeight: "500",
-    color: colors.secondary[800],
-  },
-  thread2: {
-    fontFamily: fonts.body.primary,
-    fontWeight: "500",
-    color: colors.secondary[800],
-  },
-  thread3: {
-    fontFamily: fonts.body.tertiary,
-    fontWeight: "500",
-    color: colors.secondary[800],
-  },
-};
-
-interface ThreadColors {
-  bg: string;
-  userBg: string;
-  assistantBg: string;
-  assistantBgLiked?: string;
-  assistantBgDisliked?: string;
-  thirdBg: string;
-  borderColor: string;
-  buttonColor: string;
-  textColor?: string;
-}
-
 export const threadColors: Record<string, ThreadColors> = {
   thread1: {
     bg: "#f1f5f9",
@@ -155,6 +125,30 @@ export const threadColors: Record<string, ThreadColors> = {
   },
 };
 
+export const threadStyles: Record<string, any> = {
+  thread1: {
+    fontFamily: fonts.body.primary,
+  },
+  thread2: {
+    fontFamily: fonts.body.primary,
+  },
+  thread3: {
+    fontFamily: fonts.body.primary,
+  },
+};
+
+interface ThreadColors {
+  bg: string;
+  userBg: string;
+  assistantBg: string;
+  assistantBgLiked?: string;
+  assistantBgDisliked?: string;
+  thirdBg: string;
+  borderColor: string;
+  buttonColor: string;
+  textColor?: string;
+}
+
 export const theme = {
   ...chakraTheme,
   colors,
@@ -183,10 +177,11 @@ export const theme = {
           },
           _placeholder: {
             color: "gray.400",
-            fontFamily: fonts.body.secondary,
+            fontFamily: fonts.body.primary,
           },
           px: 4,
           py: 2,
+          fontFamily: fonts.body.primary,
         },
       },
       variants: {
@@ -210,7 +205,7 @@ export const theme = {
         thread3: {
           field: {
             _placeholder: {
-              fontFamily: fonts.body.tertiary,
+              fontFamily: fonts.body.primary,
             },
           },
         },
@@ -234,6 +229,21 @@ export const theme = {
         icon: {
           display: "none",
         },
+      },
+    },
+    Button: {
+      baseStyle: {
+        fontFamily: fonts.body.primary,
+      },
+    },
+    Text: {
+      baseStyle: {
+        fontFamily: fonts.body.primary,
+      },
+    },
+    Heading: {
+      baseStyle: {
+        fontFamily: fonts.heading.primary,
       },
     },
     Switch: {

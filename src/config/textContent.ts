@@ -1,20 +1,15 @@
 export const threadDescriptions = [
   {
-    title: "Multi-Person Chat",
-    description: "Toggle between two and three-person chats.",
+    title: "Chatbot 1",
+    description: "A simple chat interface with a clean, modern design.",
   },
   {
-    title: "Model Selector",
-    description: "Switch between GPT models to compare their responses.",
+    title: "Chatbot 2",
+    description: "Advanced chat with model selection and custom styling.",
   },
   {
-    title: "Feedback System",
-    description: "Like or dislike responses and provide feedback.",
-  },
-  {
-    title: "Image Upload",
-    description:
-      "Upload images with context. Supports image upload confirmation with GPT-4 text responses.",
+    title: "Chatbot 3",
+    description: "Feedback-focused chat with like/dislike functionality.",
   },
 ];
 
