@@ -464,7 +464,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
       >
         <Flex justify="space-between" align="center" gap={2}>
           <Text
-            fontSize={{ base: "15px", sm: "16px", md: "17px" }}
+            fontSize={{ base: "md", sm: "lg" }}
             fontWeight="bold"
             {...threadStyle}
             color={isThreadThree ? colors.bg : colors.textColor}
@@ -543,7 +543,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
               >
                 <Text
                   {...threadStyle}
-                  fontSize={{ base: "13px", sm: "14px", md: "15px" }}
+                  fontSize={{ base: "sm", sm: "md" }}
                   color={
                     message.role === "user"
                       ? "white"
@@ -556,7 +556,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                 </Text>
                 {message.role === "assistant" && isThreadTwo && (
                   <Text
-                    fontSize="12px"
+                    fontSize="xs"
                     color={theme.colors.secondary[500]}
                     fontStyle="italic"
                     mt={1}
@@ -592,7 +592,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                         ? fonts.body.primary
                         : fonts.body.secondary
                     }
-                    fontSize="12px"
+                    fontSize="xs"
                   >
                     Learn more about this
                   </Button>
@@ -769,7 +769,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                 }
               }}
               {...threadStyle}
-              fontSize={{ base: "13px", sm: "14px", md: "15px" }}
+              fontSize={{ base: "sm", sm: "md" }}
               size={{ base: "xs", sm: "sm" }}
               bg={getInputBgColor()}
               borderColor={colors.borderColor}
@@ -818,7 +818,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                   }
                 }}
                 {...threadStyle}
-                fontSize={{ base: "13px", sm: "14px", md: "15px" }}
+                fontSize={{ base: "sm", sm: "md" }}
                 bg="white"
                 borderColor={colors.borderColor}
                 borderWidth="1px"

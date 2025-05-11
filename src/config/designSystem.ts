@@ -125,13 +125,13 @@ interface ThreadColors {
 
 export const threadColors: Record<string, ThreadColors> = {
   thread1: {
-    bg: "white",
-    userBg: colors.primary[500],
-    assistantBg: colors.secondary[100],
-    thirdBg: colors.primary[300],
-    borderColor: colors.secondary[200],
-    buttonColor: "blue",
-    textColor: undefined,
+    bg: "#faf5ff",
+    userBg: "#9333ea",
+    assistantBg: "#f3e8ff",
+    thirdBg: "#c084fc",
+    borderColor: "#e9d5ff",
+    buttonColor: "purple",
+    textColor: "#6b21a8",
   },
   thread2: {
     bg: "#fff7ed",

@@ -1,12 +1,13 @@
 import {
   Box,
   VStack,
-  Heading,
   Text,
-  Grid,
+  List,
+  ListItem,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { theme, threadColors } from "../config/designSystem";
+import { theme, threadColors, threadStyles } from "../config/designSystem";
+import { threadDescriptions } from "../config/textContent";
 
 interface DesignSystemProps {
   threadId: number;
@@ -20,61 +21,76 @@ export default function DesignSystem({ threadId }: DesignSystemProps) {
   const colors = threadColors[threadKey];
   const bgColor = useColorModeValue("white", "gray.800");
 
+  const getInstructions = () => {
+    switch (threadId) {
+      case 0:
+        return [
+          "Type your message in the input box at the bottom",
+          "Click the chat icon or press Enter to send",
+          "Click 'Invite' to add another person to the chat",
+          "The other person can join using the shared link",
+        ];
+      case 1:
+        return [
+          "Select different AI models from the dropdown",
+          "Try GPT-3.5 for faster responses",
+          "Use GPT-4 for more complex tasks",
+          "GPT-4 Turbo offers the best balance of speed and quality",
+        ];
+      case 2:
+        return [
+          "Upload images by clicking the paperclip icon",
+          "Ask questions about the uploaded image",
+          "Use the feedback buttons to rate responses",
+          "Provide feedback when responses are incorrect",
+        ];
+      default:
+        return [];
+    }
+  };
+
   return (
     <Box
       w="100%"
-      h="100%"
+      h={{ base: "80vh", sm: "75vh", md: "70vh" }}
       bg={colors.bg}
       p={{ base: 2, sm: 3, md: 4 }}
-      borderRadius={
-        threadId === 2 ? theme.borderRadius.xl : theme.borderRadius.lg
-      }
-      boxShadow={
-        threadId === 1
-          ? theme.shadows.sm
-          : threadId === 2
-          ? theme.shadows.md
-          : theme.shadows.none
-      }
+      borderRadius={threadId === 1 ? "0" : "lg"}
+      boxShadow={theme.shadows.sm}
       overflowY="auto"
     >
-      <Box>
-        <Heading
-          size={{ base: "xs", sm: "sm", md: "md" }}
-          color={colors.textColor}
-          mb={{ base: 2, sm: 3 }}
-          fontFamily={theme.fonts.heading.primary}
-        >
-          Colors
-        </Heading>
-        <Grid
-          templateColumns={{
-            base: "repeat(2, 1fr)",
-            sm: "repeat(2, 1fr)",
-          }}
-          gap={{ base: 2, sm: 3 }}
-        >
-          {Object.entries(colors).map(([name, value]) => (
-            <Box key={name}>
-              <Box
-                w="100%"
-                h={{ base: "30px", sm: "40px" }}
-                bg={value}
-                borderRadius="md"
-                mb={1}
-                boxShadow="0 2px 4px rgba(0, 0, 0, 0.1)"
-              />
-              <Text
-                fontSize={{ base: "xs", sm: "sm" }}
-                color={colors.textColor}
-                fontFamily={theme.fonts.body.primary}
-              >
-                {name}
-              </Text>
-            </Box>
+      <VStack spacing={{ base: 2, sm: 3, md: 4 }} align="stretch" h="100%">
+        <Box>
+          <Text
+            fontSize={{ base: "md", sm: "lg" }}
+            fontWeight="bold"
+            color={colors.textColor}
+            mb={{ base: 1, sm: 2 }}
+            fontFamily={theme.fonts.heading.primary}
+          >
+            How to Use
+          </Text>
+          <Text
+            fontSize={{ base: "sm", sm: "md" }}
+            color={theme.colors.secondary[600]}
+            fontFamily={theme.fonts.body.primary}
+          >
+            {threadDescriptions[threadId].description}
+          </Text>
+        </Box>
+        <List spacing={3} styleType="disc" pl={4}>
+          {getInstructions().map((instruction, index) => (
+            <ListItem
+              key={index}
+              fontSize={{ base: "sm", sm: "md" }}
+              color={colors.textColor}
+              fontFamily={theme.fonts.body.primary}
+            >
+              {instruction}
+            </ListItem>
           ))}
-        </Grid>
-      </Box>
+        </List>
+      </VStack>
     </Box>
   );
 }
