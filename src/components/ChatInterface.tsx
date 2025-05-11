@@ -780,7 +780,12 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
             />
             <IconButton
               aria-label={buttonLabels.send}
-              icon={<ChatIcon boxSize="16px" />}
+              icon={
+                <ChatIcon
+                  boxSize={{ base: "20px", sm: "24px", md: "28px" }}
+                  strokeWidth="0.5"
+                />
+              }
               colorScheme={colors.buttonColor}
               onClick={handleSendMessage}
               isLoading={isLoading}
@@ -828,7 +833,12 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
               />
               <IconButton
                 aria-label={buttonLabels.send}
-                icon={<ChatIcon boxSize="16px" />}
+                icon={
+                  <ChatIcon
+                    boxSize={{ base: "20px", sm: "24px", md: "28px" }}
+                    strokeWidth="0.5"
+                  />
+                }
                 colorScheme={colors.buttonColor}
                 onClick={handleThirdPersonMessage}
                 size={{ base: "xs", sm: "sm", md: "md" }}
