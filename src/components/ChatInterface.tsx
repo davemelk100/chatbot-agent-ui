@@ -39,6 +39,7 @@ import {
   createChatCompletion,
   createVisionCompletion,
 } from "../services/openai";
+import type { ChatMessage } from "../services/openai";
 
 interface Message {
   role: "user" | "assistant" | "third";
@@ -58,6 +59,56 @@ type LLMModel =
   | "gpt-4"
   | "gpt-4-turbo"
   | "gpt-4-vision-preview";
+
+function containsCodeBlock(text: string): boolean {
+  return text.includes("```") || text.includes("`");
+}
+
+function formatMessageContent(content: string) {
+  if (!containsCodeBlock(content)) {
+    return content;
+  }
+
+  // Split the content by code blocks
+  const parts = content.split(/(```[\s\S]*?```|`[^`]+`)/g);
+
+  return parts.map((part, index) => {
+    if (part.startsWith("```") && part.endsWith("```")) {
+      // Code block
+      const code = part.slice(3, -3).trim();
+      return (
+        <Box
+          key={index}
+          bg="gray.100"
+          p={2}
+          borderRadius="md"
+          fontFamily="monospace"
+          fontSize="sm"
+          whiteSpace="pre-wrap"
+        >
+          {code}
+        </Box>
+      );
+    } else if (part.startsWith("`") && part.endsWith("`")) {
+      // Inline code
+      const code = part.slice(1, -1);
+      return (
+        <Text
+          key={index}
+          as="span"
+          fontFamily="monospace"
+          bg="gray.100"
+          px={1}
+          py={0.5}
+          borderRadius="sm"
+        >
+          {code}
+        </Text>
+      );
+    }
+    return part;
+  });
+}
 
 export default function ChatInterface({ threadId }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -189,7 +240,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
     setIsLoading(true);
 
     try {
-      const apiMessages = [
+      const apiMessages: ChatMessage[] = [
         {
           role: "system",
           content: `You are a helpful assistant in chat thread ${
@@ -307,23 +358,25 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
     setIsLoading(true);
 
     try {
+      const apiMessages: ChatMessage[] = [
+        {
+          role: "system",
+          content: `You are a helpful assistant in chat thread ${
+            threadId + 1
+          }. Keep your responses concise and friendly.`,
+        },
+        ...messages
+          .filter((msg) => msg.role !== "third")
+          .map((msg) => ({
+            role: msg.role as "user" | "assistant",
+            content: msg.content,
+          })),
+        { role: "user", content: thirdPersonInput },
+      ];
+
       const completion = await createChatCompletion(
         import.meta.env.VITE_OPENAI_API_KEY,
-        [
-          {
-            role: "system",
-            content: `You are a helpful assistant in chat thread ${
-              threadId + 1
-            }. Keep your responses concise and friendly.`,
-          },
-          ...messages
-            .filter((msg) => msg.role !== "third")
-            .map((msg) => ({
-              role: msg.role as "user" | "assistant",
-              content: msg.content,
-            })),
-          { role: "user", content: thirdPersonInput },
-        ],
+        apiMessages,
         isThreadTwo ? selectedModel : "gpt-3.5-turbo"
       );
 
@@ -502,7 +555,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                       : "black"
                   }
                 >
-                  {message.content}
+                  {formatMessageContent(message.content)}
                 </Text>
                 {message.role === "assistant" && isThreadTwo && (
                   <Text

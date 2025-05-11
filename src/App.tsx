@@ -78,8 +78,7 @@ function App() {
                 <Grid
                   templateColumns={{
                     base: "1fr",
-                    sm: "1fr 2fr",
-                    md: "1fr 3fr",
+                    sm: "3fr 1fr",
                   }}
                   gap={{ base: 4, sm: 6 }}
                 >

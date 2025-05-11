@@ -1,9 +1,9 @@
-interface ChatMessage {
+export interface ChatMessage {
   role: "system" | "user" | "assistant";
   content: string | ChatContentPart[];
 }
 
-interface ChatContentPart {
+export interface ChatContentPart {
   type: "text" | "image_url";
   text?: string;
   image_url?: {
