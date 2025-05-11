@@ -23,7 +23,6 @@ import {
   AddIcon as UserAddIcon,
   ArrowUpIcon,
 } from "@chakra-ui/icons";
-import OpenAI from "openai";
 import {
   errorMessages,
   placeholders,
@@ -36,6 +35,10 @@ import {
   fonts,
 } from "../config/designSystem";
 import ChatJoiner from "./ChatJoiner";
+import {
+  createChatCompletion,
+  createVisionCompletion,
+} from "../services/openai";
 
 interface Message {
   role: "user" | "assistant" | "third";
@@ -113,11 +116,6 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
   const threadStyle = getThreadStyle();
   const colors = getThreadColors();
 
-  const openai = new OpenAI({
-    apiKey: import.meta.env.VITE_OPENAI_API_KEY,
-    dangerouslyAllowBrowser: true,
-  });
-
   // Check for chat ID in URL parameters
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -191,7 +189,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
     setIsLoading(true);
 
     try {
-      const apiMessages: OpenAI.Chat.ChatCompletionMessageParam[] = [
+      const apiMessages = [
         {
           role: "system",
           content: `You are a helpful assistant in chat thread ${
@@ -218,21 +216,20 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
       if (selectedImage) {
         const base64Image = imagePreview?.split(",")[1]; // Remove the data URL prefix
         if (model === "gpt-4-vision-preview") {
-          const content: OpenAI.Chat.ChatCompletionContentPart[] = [
-            {
-              type: "text",
-              text: input || "What can you tell me about this image?",
-            },
-            {
-              type: "image_url",
-              image_url: {
-                url: `data:image/jpeg;base64,${base64Image}`,
-              },
-            },
-          ];
           apiMessages.push({
             role: "user",
-            content,
+            content: [
+              {
+                type: "text",
+                text: input || "What can you tell me about this image?",
+              },
+              {
+                type: "image_url",
+                image_url: {
+                  url: `data:image/jpeg;base64,${base64Image}`,
+                },
+              },
+            ],
           });
         } else {
           // For non-vision models, just send the text
@@ -247,13 +244,17 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
         apiMessages.push({ role: "user", content: input });
       }
 
-      console.log("Sending request to OpenAI with model:", model);
-      console.log("Message content:", JSON.stringify(apiMessages, null, 2));
-
-      const completion = await openai.chat.completions.create({
-        messages: apiMessages,
-        model,
-      });
+      const completion = await (selectedImage
+        ? createVisionCompletion(
+            import.meta.env.VITE_OPENAI_API_KEY,
+            apiMessages,
+            model
+          )
+        : createChatCompletion(
+            import.meta.env.VITE_OPENAI_API_KEY,
+            apiMessages,
+            model
+          ));
 
       const assistantMessage: Message = {
         role: "assistant",
@@ -306,8 +307,9 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
     setIsLoading(true);
 
     try {
-      const completion = await openai.chat.completions.create({
-        messages: [
+      const completion = await createChatCompletion(
+        import.meta.env.VITE_OPENAI_API_KEY,
+        [
           {
             role: "system",
             content: `You are a helpful assistant in chat thread ${
@@ -322,8 +324,8 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
             })),
           { role: "user", content: thirdPersonInput },
         ],
-        model: isThreadTwo ? selectedModel : "gpt-3.5-turbo",
-      });
+        isThreadTwo ? selectedModel : "gpt-3.5-turbo"
+      );
 
       const assistantMessage: Message = {
         role: "assistant",
