@@ -18,21 +18,19 @@ interface Message {
 }
 
 interface EmbeddableChatProps {
-  threadId: number;
   apiKey: string;
-  initialMessage?: string;
   position?: "bottom-right" | "bottom-left" | "top-right" | "top-left";
   width?: string;
   height?: string;
+  initialMessage?: string;
 }
 
 export default function EmbeddableChat({
-  threadId,
   apiKey,
-  initialMessage = "Hello! How can I help you today?",
   position = "bottom-right",
   width = "350px",
   height = "500px",
+  initialMessage = "Hello! How can I help you today?",
 }: EmbeddableChatProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([

@@ -7,8 +7,8 @@ import {
   useColorModeValue,
   IconButton,
   HStack,
-  keyframes,
 } from "@chakra-ui/react";
+import { keyframes } from "@emotion/react";
 import { CopyIcon, CheckIcon } from "@chakra-ui/icons";
 import { useState } from "react";
 
