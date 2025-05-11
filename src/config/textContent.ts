@@ -1,11 +1,11 @@
 export const threadDescriptions = [
   {
     title: "Chatbot 1",
-    description: "A simple chat interface with a clean, modern design.",
+    description: "A chatbot that can add a third person to the conversation.",
   },
   {
     title: "Chatbot 2",
-    description: "Advanced chat with model selection and custom styling.",
+    description: "Advanced chat with model selectio.",
   },
   {
     title: "Chatbot 3",
