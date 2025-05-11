@@ -1,32 +1,25 @@
-import { useState, useRef, useEffect } from "react";
 import {
   Box,
+  Button,
   VStack,
   Input,
   Text,
-  Flex,
+  useColorModeValue,
   IconButton,
-  Heading,
-  createStandaloneToast,
+  Flex,
+  Spinner,
 } from "@chakra-ui/react";
+import { useState, useRef, useEffect } from "react";
 import { ChatIcon, CloseIcon } from "@chakra-ui/icons";
-import OpenAI from "openai";
-import {
-  theme,
-  threadStyles,
-  threadColors,
-  fonts,
-} from "../config/designSystem";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
-  model: "gpt-3.5-turbo" | "gpt-4";
 }
 
 interface EmbeddableChatProps {
-  threadId?: number;
-  apiKey?: string;
+  threadId: number;
+  apiKey: string;
   initialMessage?: string;
   position?: "bottom-right" | "bottom-left" | "top-right" | "top-left";
   width?: string;
@@ -34,7 +27,7 @@ interface EmbeddableChatProps {
 }
 
 export default function EmbeddableChat({
-  threadId = 0,
+  threadId,
   apiKey,
   initialMessage = "Hello! How can I help you today?",
   position = "bottom-right",
@@ -43,203 +36,164 @@ export default function EmbeddableChat({
 }: EmbeddableChatProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: "assistant", content: initialMessage, model: "gpt-3.5-turbo" },
+    { role: "assistant", content: initialMessage },
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { toast } = createStandaloneToast();
 
-  const colors =
-    threadColors[`thread${threadId + 1}` as keyof typeof threadColors];
-  const threadStyle =
-    threadStyles[`thread${threadId + 1}` as keyof typeof threadStyles];
+  const bgColor = useColorModeValue("white", "gray.800");
+  const borderColor = useColorModeValue("gray.200", "gray.700");
 
-  const openai = new OpenAI({
-    apiKey: apiKey || import.meta.env.VITE_OPENAI_API_KEY,
-    dangerouslyAllowBrowser: true,
-  });
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
-    }
+    scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = async () => {
+  const handleSend = async () => {
     if (!input.trim()) return;
 
-    const userMessage: Message = {
-      role: "user",
-      content: input,
-      model: "gpt-3.5-turbo",
-    };
+    const userMessage = { role: "user" as const, content: input };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
 
     try {
-      const completion = await openai.chat.completions.create({
-        messages: [
-          {
-            role: "system",
-            content: `You are a helpful assistant in chat thread ${
-              threadId + 1
-            }. Keep your responses concise and friendly.`,
+      const response = await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${apiKey}`,
           },
-          ...messages.map((msg) => ({
-            role: msg.role,
-            content: msg.content,
-          })),
-        ],
-        model: "gpt-3.5-turbo",
-      });
+          body: JSON.stringify({
+            model: "gpt-3.5-turbo",
+            messages: [
+              {
+                role: "system",
+                content: "You are a helpful assistant.",
+              },
+              ...messages,
+              userMessage,
+            ],
+          }),
+        }
+      );
 
-      const assistantMessage: Message = {
-        role: "assistant",
-        content: completion.choices[0].message.content || "",
-        model: "gpt-3.5-turbo",
+      const data = await response.json();
+      const assistantMessage = {
+        role: "assistant" as const,
+        content: data.choices[0].message.content,
       };
-
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to get response from OpenAI",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-        containerStyle: {
-          background: "white",
+      console.error("Error:", error);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: "Sorry, I encountered an error. Please try again.",
         },
-      });
+      ]);
     } finally {
       setIsLoading(false);
     }
   };
 
   const getPositionStyles = () => {
-    const baseStyles = {
-      position: "fixed",
-      zIndex: 1000,
+    const positions = {
+      "bottom-right": { bottom: "20px", right: "20px" },
+      "bottom-left": { bottom: "20px", left: "20px" },
+      "top-right": { top: "20px", right: "20px" },
+      "top-left": { top: "20px", left: "20px" },
     };
-
-    switch (position) {
-      case "bottom-right":
-        return { ...baseStyles, bottom: "20px", right: "20px" };
-      case "bottom-left":
-        return { ...baseStyles, bottom: "20px", left: "20px" };
-      case "top-right":
-        return { ...baseStyles, top: "20px", right: "20px" };
-      case "top-left":
-        return { ...baseStyles, top: "20px", left: "20px" };
-      default:
-        return { ...baseStyles, bottom: "20px", right: "20px" };
-    }
+    return positions[position];
   };
 
-  if (!isOpen) {
-    return (
-      <Box {...getPositionStyles()}>
+  return (
+    <Box position="fixed" zIndex={1000} {...getPositionStyles()}>
+      {!isOpen ? (
         <IconButton
           aria-label="Open chat"
           icon={<ChatIcon />}
-          colorScheme={colors.buttonColor}
+          colorScheme="blue"
           size="lg"
           isRound
           onClick={() => setIsOpen(true)}
-          boxShadow="lg"
         />
-      </Box>
-    );
-  }
-
-  return (
-    <Box
-      {...getPositionStyles()}
-      w={width}
-      h={height}
-      bg={colors.bg}
-      borderRadius="lg"
-      boxShadow="xl"
-      display="flex"
-      flexDirection="column"
-    >
-      <Box
-        p={3}
-        borderBottom="1px"
-        borderColor={colors.borderColor}
-        bg={colors.textColor}
-      >
-        <Flex justify="space-between" align="center">
-          <Heading
-            size="sm"
-            color={colors.bg}
-            fontFamily={fonts.heading.primary}
+      ) : (
+        <Box
+          w={width}
+          h={height}
+          bg={bgColor}
+          borderRadius="lg"
+          boxShadow="xl"
+          display="flex"
+          flexDirection="column"
+          borderWidth="1px"
+          borderColor={borderColor}
+        >
+          <Flex
+            justify="space-between"
+            align="center"
+            p={4}
+            borderBottomWidth="1px"
+            borderColor={borderColor}
           >
-            Chat Assistant
-          </Heading>
-          <IconButton
-            aria-label="Close chat"
-            icon={<CloseIcon />}
-            size="sm"
-            variant="ghost"
-            color={colors.bg}
-            onClick={() => setIsOpen(false)}
-          />
-        </Flex>
-      </Box>
+            <Text fontWeight="bold">Chat</Text>
+            <IconButton
+              aria-label="Close chat"
+              icon={<CloseIcon />}
+              size="sm"
+              variant="ghost"
+              onClick={() => setIsOpen(false)}
+            />
+          </Flex>
 
-      <Box flex="1" overflowY="auto" p={3} ref={messagesEndRef}>
-        <VStack spacing={3} align="stretch">
-          {messages.map((message, index) => (
-            <Flex
-              key={index}
-              justify={message.role === "user" ? "flex-end" : "flex-start"}
-            >
+          <VStack flex="1" overflowY="auto" p={4} spacing={4} align="stretch">
+            {messages.map((message, index) => (
               <Box
-                maxW="85%"
-                bg={
-                  message.role === "user" ? colors.userBg : colors.assistantBg
-                }
+                key={index}
+                alignSelf={message.role === "user" ? "flex-end" : "flex-start"}
+                maxW="80%"
+                bg={message.role === "user" ? "blue.500" : "gray.100"}
                 color={message.role === "user" ? "white" : "black"}
                 p={3}
                 borderRadius="lg"
-                boxShadow="sm"
               >
-                <Text fontSize="sm" fontFamily={fonts.body.primary}>
-                  {message.content}
-                </Text>
+                <Text fontSize="sm">{message.content}</Text>
               </Box>
-            </Flex>
-          ))}
-        </VStack>
-      </Box>
+            ))}
+            {isLoading && (
+              <Box alignSelf="flex-start">
+                <Spinner size="sm" color="blue.500" />
+              </Box>
+            )}
+            <div ref={messagesEndRef} />
+          </VStack>
 
-      <Box p={3} borderTop="1px" borderColor={colors.borderColor}>
-        <Flex gap={2}>
-          <Input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Type your message..."
-            size="sm"
-            fontFamily={fonts.body.primary}
-            onKeyPress={(e) => {
-              if (e.key === "Enter") {
-                handleSendMessage();
-              }
-            }}
-          />
-          <IconButton
-            aria-label="Send message"
-            icon={<ChatIcon />}
-            colorScheme={colors.buttonColor}
-            onClick={handleSendMessage}
-            isLoading={isLoading}
-            size="sm"
-          />
-        </Flex>
-      </Box>
+          <Flex p={4} borderTopWidth="1px" borderColor={borderColor}>
+            <Input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Type your message..."
+              mr={2}
+              onKeyPress={(e) => e.key === "Enter" && handleSend()}
+            />
+            <Button
+              colorScheme="blue"
+              onClick={handleSend}
+              isLoading={isLoading}
+            >
+              Send
+            </Button>
+          </Flex>
+        </Box>
+      )}
     </Box>
   );
 }
