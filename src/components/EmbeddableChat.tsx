@@ -17,7 +17,7 @@ interface Message {
   content: string;
 }
 
-interface EmbeddableChatProps {
+export interface EmbeddableChatProps {
   apiKey: string;
   position?: "bottom-right" | "bottom-left" | "top-right" | "top-left";
   width?: string;
