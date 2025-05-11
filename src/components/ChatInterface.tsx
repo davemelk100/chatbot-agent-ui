@@ -12,7 +12,6 @@ import {
   HStack,
   Button,
   createStandaloneToast,
-  Portal,
 } from "@chakra-ui/react";
 import {
   ChatIcon,
@@ -21,8 +20,6 @@ import {
   CheckIcon,
   NotAllowedIcon,
   SettingsIcon,
-  TriangleUpIcon,
-  TriangleDownIcon,
   AddIcon as UserAddIcon,
   ArrowUpIcon,
 } from "@chakra-ui/icons";
@@ -71,8 +68,17 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
   const [selectedModel, setSelectedModel] = useState<LLMModel>("gpt-3.5-turbo");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
   const { toast } = createStandaloneToast();
   const [showJoiner, setShowJoiner] = useState(false);
+
+  // Add auto-scroll effect for chat container only
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const isThreadOne = threadId === 0;
   const isThreadTwo = threadId === 1;
@@ -447,7 +453,12 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
           </Flex>
         </Flex>
       </Box>
-      <Box flex="1" overflowY="auto" p={{ base: 2, sm: 3, md: 4 }}>
+      <Box
+        flex="1"
+        overflowY="auto"
+        p={{ base: 2, sm: 3, md: 4 }}
+        ref={chatContainerRef}
+      >
         <VStack spacing={{ base: 3, sm: 4, md: 5 }} align="stretch">
           {messages.map((message, index) => (
             <Flex
