@@ -463,22 +463,19 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
         bg={isThreadThree ? colors.textColor : undefined}
       >
         <Flex justify="space-between" align="center" gap={2}>
-          <Heading
-            size={{
-              base: "xs",
-              sm: "sm",
-              md: isThreadTwo ? "md" : "sm",
-            }}
+          <Text
+            fontSize={{ base: "15px", sm: "16px", md: "17px" }}
+            fontWeight="bold"
             {...threadStyle}
             color={isThreadThree ? colors.bg : colors.textColor}
           >
             <Flex align="center" gap={2}>
-              {isThreadOne && <UserAddIcon />}
-              {isThreadTwo && <SettingsIcon />}
-              {isThreadThree && <ArrowUpIcon />}
+              {isThreadOne && <UserAddIcon boxSize="18px" />}
+              {isThreadTwo && <SettingsIcon boxSize="18px" />}
+              {isThreadThree && <ArrowUpIcon boxSize="18px" />}
               Chatbot {threadId + 1}
             </Flex>
-          </Heading>
+          </Text>
           <Flex gap={{ base: 2, sm: 4 }} align="center">
             {isThreadOne && !isThirdPersonEnabled && (
               <Button
@@ -546,7 +543,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
               >
                 <Text
                   {...threadStyle}
-                  fontSize={{ base: "xs", sm: "sm", md: "md" }}
+                  fontSize={{ base: "13px", sm: "14px", md: "15px" }}
                   color={
                     message.role === "user"
                       ? "white"
@@ -559,7 +556,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                 </Text>
                 {message.role === "assistant" && isThreadTwo && (
                   <Text
-                    fontSize="xs"
+                    fontSize="12px"
                     color={theme.colors.secondary[500]}
                     fontStyle="italic"
                     mt={1}
@@ -580,7 +577,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                     variant="ghost"
                     colorScheme={colors.buttonColor}
                     mt={2}
-                    leftIcon={<ChatIcon />}
+                    leftIcon={<ChatIcon boxSize="14px" />}
                     onClick={() => {
                       setInput(
                         `Can you tell me more about: ${
@@ -595,6 +592,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                         ? fonts.body.primary
                         : fonts.body.secondary
                     }
+                    fontSize="12px"
                   >
                     Learn more about this
                   </Button>
@@ -771,7 +769,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                 }
               }}
               {...threadStyle}
-              fontSize={{ base: "xs", sm: "sm", md: "md" }}
+              fontSize={{ base: "13px", sm: "14px", md: "15px" }}
               size={{ base: "xs", sm: "sm" }}
               bg={getInputBgColor()}
               borderColor={colors.borderColor}
@@ -782,7 +780,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
             />
             <IconButton
               aria-label={buttonLabels.send}
-              icon={<ChatIcon />}
+              icon={<ChatIcon boxSize="16px" />}
               colorScheme={colors.buttonColor}
               onClick={handleSendMessage}
               isLoading={isLoading}
@@ -820,7 +818,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                   }
                 }}
                 {...threadStyle}
-                fontSize={{ base: "xs", sm: "sm", md: "md" }}
+                fontSize={{ base: "13px", sm: "14px", md: "15px" }}
                 bg="white"
                 borderColor={colors.borderColor}
                 borderWidth="1px"
@@ -830,7 +828,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
               />
               <IconButton
                 aria-label={buttonLabels.send}
-                icon={<ChatIcon />}
+                icon={<ChatIcon boxSize="16px" />}
                 colorScheme={colors.buttonColor}
                 onClick={handleThirdPersonMessage}
                 size={{ base: "xs", sm: "sm", md: "md" }}
