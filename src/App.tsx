@@ -14,10 +14,7 @@ import { theme } from "./config/designSystem";
 import { ChatInterface, DesignSystem } from "./components/lazy";
 
 function App() {
-  const bgColor = useColorModeValue(
-    theme.colors.secondary[100],
-    theme.colors.secondary[900]
-  );
+  const bgColor = "white";
   const textColor = useColorModeValue(
     theme.colors.secondary[800],
     theme.colors.secondary[100]

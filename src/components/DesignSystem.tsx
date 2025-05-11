@@ -39,10 +39,10 @@ export default function DesignSystem({ threadId }: DesignSystemProps) {
         ];
       case 2:
         return [
-          "Upload images by clicking the paperclip icon",
-          "Ask questions about the uploaded image",
           "Use the feedback buttons to rate responses",
           "Provide feedback when responses are incorrect",
+          "Share your experience with the chatbot",
+          "Help improve the AI's responses",
         ];
       default:
         return [];
@@ -78,7 +78,7 @@ export default function DesignSystem({ threadId }: DesignSystemProps) {
             {threadDescriptions[threadId].description}
           </Text>
         </Box>
-        <List spacing={3} styleType="disc" pl={4}>
+        <List spacing={3} styleType="decimal" pl={4}>
           {getInstructions().map((instruction, index) => (
             <ListItem
               key={index}
