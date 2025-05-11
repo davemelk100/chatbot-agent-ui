@@ -57,7 +57,7 @@ export default function EmbedInstructions() {
         </Heading>
 
         <Text fontSize="sm" fontFamily="Avenir">
-          Add our chatbot to your website in three simple steps:
+          Embed chatbot to your website like this:
         </Text>
 
         <VStack align="stretch" spacing={3} pl={4}>
