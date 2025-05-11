@@ -12,6 +12,7 @@ import { Suspense } from "react";
 import { threadDescriptions } from "./config/textContent";
 import { theme } from "./config/designSystem";
 import { ChatInterface, DesignSystem } from "./components/lazy";
+import EmbedInstructions from "./components/EmbedInstructions";
 
 function App() {
   const bgColor = useColorModeValue(
@@ -43,8 +44,9 @@ function App() {
             color={textColor}
             opacity={0.7}
             fontFamily={theme.fonts.body.primary}
+            fontWeight="semibold"
           >
-            Agent UI Lab
+            AGENT UI LAB
           </Text>
           <VStack
             spacing={{
@@ -55,6 +57,7 @@ function App() {
             align="stretch"
             mt={{ base: "32px", sm: "40px" }}
           >
+            <EmbedInstructions />
             {[0, 1, 2].map((threadId) => (
               <Box key={threadId} w="100%">
                 <Box mb={{ base: theme.spacing.sm, sm: theme.spacing.md }}>
