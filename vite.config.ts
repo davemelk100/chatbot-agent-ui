@@ -20,6 +20,7 @@ export default defineConfig({
         "@emotion/react",
         "@emotion/styled",
         "framer-motion",
+        "openai",
       ],
       output: {
         globals: {
@@ -29,6 +30,7 @@ export default defineConfig({
           "@emotion/react": "EmotionReact",
           "@emotion/styled": "EmotionStyled",
           "framer-motion": "FramerMotion",
+          openai: "OpenAI",
         },
       },
     },
