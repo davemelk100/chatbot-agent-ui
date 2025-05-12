@@ -5,12 +5,25 @@ export const threadDescriptions = [
   },
   {
     title: "Chatbot 2",
-    description: "Advanced chat with model selectio.",
+    description: "Advanced chat with model selection.",
   },
   {
     title: "Chatbot 3",
     description: "Feedback-focused chat with like/dislike functionality.",
   },
+  {
+    title: "Personality Feedback Chatbot",
+    description:
+      "Choose and rate different chatbot personalities to help improve responses.",
+  },
+];
+
+export const personalityTypes = [
+  { value: "friendly", label: "Friendly & Casual" },
+  { value: "professional", label: "Professional & Formal" },
+  { value: "humorous", label: "Humorous & Playful" },
+  { value: "concise", label: "Concise & Direct" },
+  { value: "empathetic", label: "Empathetic & Supportive" },
 ];
 
 export const appTitle = "Agent UI Interfaces";

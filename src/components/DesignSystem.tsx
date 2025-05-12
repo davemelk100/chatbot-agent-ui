@@ -1,11 +1,4 @@
-import {
-  Box,
-  VStack,
-  Text,
-  List,
-  ListItem,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import { Box, VStack, Text, List, ListItem } from "@chakra-ui/react";
 import { theme, threadColors, threadStyles } from "../config/designSystem";
 import { threadDescriptions } from "../config/textContent";
 
@@ -13,13 +6,18 @@ interface DesignSystemProps {
   threadId: number;
 }
 
-type ThreadKey = "thread1" | "thread2" | "thread3";
+type ThreadKey = "thread1" | "thread2" | "thread3" | "thread4";
 
 export default function DesignSystem({ threadId }: DesignSystemProps) {
   const threadKey: ThreadKey =
-    threadId === 0 ? "thread1" : threadId === 1 ? "thread2" : "thread3";
+    threadId === 0
+      ? "thread1"
+      : threadId === 1
+      ? "thread2"
+      : threadId === 2
+      ? "thread3"
+      : "thread4";
   const colors = threadColors[threadKey];
-  const bgColor = useColorModeValue("white", "gray.800");
 
   const getInstructions = () => {
     switch (threadId) {
@@ -43,6 +41,13 @@ export default function DesignSystem({ threadId }: DesignSystemProps) {
           "Provide feedback when responses are incorrect",
           "Share your experience with the chatbot",
           "Help improve the AI's responses",
+        ];
+      case 3:
+        return [
+          "Share your thoughts about the chatbot's personality",
+          "Provide feedback on the tone and style of responses",
+          "Suggest how the personality could be improved",
+          "The chatbot will adapt its responses based on your feedback",
         ];
       default:
         return [];

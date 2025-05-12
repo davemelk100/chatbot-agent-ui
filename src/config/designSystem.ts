@@ -123,6 +123,15 @@ export const threadColors: Record<string, ThreadColors> = {
     buttonColor: "green",
     textColor: colors.primary[700],
   },
+  thread4: {
+    bg: "#f0fdf4",
+    userBg: "#166534",
+    assistantBg: "#dcfce7",
+    thirdBg: "#86efac",
+    borderColor: "#bbf7d0",
+    buttonColor: "green.600",
+    textColor: "#166534",
+  },
 };
 
 export const threadStyles: Record<string, any> = {
@@ -133,6 +142,9 @@ export const threadStyles: Record<string, any> = {
     fontFamily: fonts.body.primary,
   },
   thread3: {
+    fontFamily: fonts.body.primary,
+  },
+  thread4: {
     fontFamily: fonts.body.primary,
   },
 };
