@@ -12,21 +12,7 @@ import {
   HStack,
   Button,
   createStandaloneToast,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalCloseButton,
-  Textarea,
-  useDisclosure,
   FormLabel,
-  Slider,
-  SliderTrack,
-  SliderThumb,
-  SliderFilledTrack,
-  Radio,
-  RadioGroup,
 } from "@chakra-ui/react";
 import {
   ChatIcon,
@@ -152,7 +138,6 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isThirdPersonEnabled, setIsThirdPersonEnabled] = useState(false);
   const [selectedModel, setSelectedModel] = useState<LLMModel>("gpt-3.5-turbo");
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -522,38 +507,6 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
     // Update personality with all trait values
     updatePersonality(personalityTrait);
 
-    // Create a feedback message that includes the current settings
-    const feedbackMsg: Message = {
-      role: "assistant",
-      content:
-        `I've saved your personality preferences! Here are your current settings:\n\n` +
-        `- Formality: ${
-          ["Casual", "Neutral", "Formal"][
-            Math.round(traitFeedback.formality * 2)
-          ]
-        }\n` +
-        `- Detail: ${
-          ["Concise", "Balanced", "Detailed"][
-            Math.round(traitFeedback.detail * 2)
-          ]
-        }\n` +
-        `- Empathy: ${
-          ["Objective", "Balanced", "Empathetic"][
-            Math.round(traitFeedback.empathy * 2)
-          ]
-        }\n` +
-        `- Humor: ${
-          ["Serious", "Balanced", "Humorous"][
-            Math.round(traitFeedback.humor * 2)
-          ]
-        }\n\n` +
-        `I'll maintain these settings for our conversation. Feel free to adjust them anytime if you'd like a different style of interaction.`,
-      model: "gpt-4",
-    };
-
-    // Add the feedback message to the chat
-    setMessages((prev) => [...prev, feedbackMsg]);
-
     // Show success toast
     toast({
       title: "Settings Saved",
@@ -563,10 +516,11 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
       isClosable: true,
       position: "top",
       containerStyle: {
-        background: "white",
+        background: "transparent",
         maxWidth: "300px",
         fontSize: "sm",
         fontFamily: "Roboto",
+        boxShadow: "none",
       },
     });
 
@@ -580,8 +534,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
       empathy: 0.5,
       humor: 0.5,
     });
-    onClose();
-  }, [traitFeedback, updatePersonality, onClose, toast]);
+  }, [traitFeedback, updatePersonality, toast]);
 
   const generateShareLink = () => {
     setIsThirdPersonEnabled(true);
@@ -742,37 +695,11 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                       colorScheme={colors.buttonColor}
                       mt={2}
                       leftIcon={<ChatIcon boxSize="14px" />}
-                      onClick={onOpen}
+                      onClick={handleFeedbackSubmit}
                       fontFamily={fonts.body.primary}
                       fontSize="xs"
                     >
                       Tune your bot's tone
-                    </Button>
-                  )}
-                  {message.role === "assistant" && !isThreadFour && (
-                    <Button
-                      size="xs"
-                      variant="ghost"
-                      colorScheme={colors.buttonColor}
-                      mt={2}
-                      leftIcon={<ChatIcon boxSize="14px" />}
-                      onClick={() => {
-                        setInput(
-                          `Can you tell me more about: ${
-                            message.content.split(".")[0]
-                          }?`
-                        );
-                      }}
-                      fontFamily={
-                        isThreadThree
-                          ? fonts.body.tertiary
-                          : isThreadTwo
-                          ? fonts.body.primary
-                          : fonts.body.secondary
-                      }
-                      fontSize="xs"
-                    >
-                      Learn more about this
                     </Button>
                   )}
                   {message.imageUrl && (
@@ -1055,237 +982,6 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                 </Text>
               </Box>
             )}
-        </VStack>
-      </BaseModal>
-
-      <BaseModal
-        isOpen={isOpen}
-        onClose={onClose}
-        title={
-          <VStack align="stretch" spacing={1}>
-            <Text
-              whiteSpace="nowrap"
-              overflow="hidden"
-              textOverflow="ellipsis"
-              fontWeight="semibold"
-              fontFamily="Roboto"
-            >
-              Chatbot Personality Feedback
-            </Text>
-            <Text color="gray.600" fontSize="sm" fontFamily="Roboto">
-              Fields marked with * are required
-            </Text>
-          </VStack>
-        }
-        primaryButtonText="Submit Feedback"
-        onPrimaryButtonClick={handleFeedbackSubmit}
-        secondaryButtonText="Cancel"
-      >
-        <VStack spacing={4} h="100%">
-          <Box bg="blue.50" p={3} borderRadius="md" w="100%">
-            <VStack align="stretch" spacing={2}>
-              <Text color="blue.700" fontSize="md" fontWeight="medium">
-                Adjust the tone and personality settings of your AI agent
-              </Text>
-            </VStack>
-          </Box>
-
-          <VStack spacing={6} w="100%" align="stretch">
-            <Box
-              bg="gray.50"
-              p={4}
-              borderRadius="md"
-              borderWidth="1px"
-              borderColor="gray.200"
-              boxShadow="sm"
-            >
-              <Text fontWeight="semibold" mb={3} color="gray.700">
-                Current Personality Settings
-              </Text>
-              <VStack align="stretch" spacing={3}>
-                <Flex justify="space-between" align="center">
-                  <Text color="gray.600" fontWeight="medium">
-                    Formality:
-                  </Text>
-                  <Text
-                    fontWeight="semibold"
-                    color={
-                      traitFeedback.trait === "formality"
-                        ? "blue.600"
-                        : "gray.700"
-                    }
-                  >
-                    {
-                      ["Casual", "Neutral", "Formal"][
-                        Math.round(traitFeedback.formality * 2)
-                      ]
-                    }
-                  </Text>
-                </Flex>
-                <Flex justify="space-between" align="center">
-                  <Text color="gray.600" fontWeight="medium">
-                    Detail:
-                  </Text>
-                  <Text
-                    fontWeight="semibold"
-                    color={
-                      traitFeedback.trait === "detail" ? "blue.600" : "gray.700"
-                    }
-                  >
-                    {
-                      ["Concise", "Balanced", "Detailed"][
-                        Math.round(traitFeedback.detail * 2)
-                      ]
-                    }
-                  </Text>
-                </Flex>
-                <Flex justify="space-between" align="center">
-                  <Text color="gray.600" fontWeight="medium">
-                    Empathy:
-                  </Text>
-                  <Text
-                    fontWeight="semibold"
-                    color={
-                      traitFeedback.trait === "empathy"
-                        ? "blue.600"
-                        : "gray.700"
-                    }
-                  >
-                    {
-                      ["Objective", "Balanced", "Empathetic"][
-                        Math.round(traitFeedback.empathy * 2)
-                      ]
-                    }
-                  </Text>
-                </Flex>
-                <Flex justify="space-between" align="center">
-                  <Text color="gray.600" fontWeight="medium">
-                    Humor:
-                  </Text>
-                  <Text
-                    fontWeight="semibold"
-                    color={
-                      traitFeedback.trait === "humor" ? "blue.600" : "gray.700"
-                    }
-                  >
-                    {
-                      ["Serious", "Balanced", "Humorous"][
-                        Math.round(traitFeedback.humor * 2)
-                      ]
-                    }
-                  </Text>
-                </Flex>
-              </VStack>
-            </Box>
-
-            <VStack spacing={5} w="100%" align="stretch">
-              <HStack spacing={4} align="flex-start">
-                <FormControl isRequired flex="1">
-                  <FormLabel
-                    htmlFor="formality-level"
-                    fontWeight="medium"
-                    color="gray.700"
-                  >
-                    Formality Level
-                  </FormLabel>
-                  <Select
-                    id="formality-level"
-                    value={String(Math.round(traitFeedback.formality * 2))}
-                    onChange={(e) =>
-                      setTraitFeedback((prev) => ({
-                        ...prev,
-                        trait: "formality",
-                        formality: Number(e.target.value) / 2,
-                      }))
-                    }
-                    colorScheme="blue"
-                  >
-                    <option value="0">Casual</option>
-                    <option value="1">Neutral</option>
-                    <option value="2">Formal</option>
-                  </Select>
-                </FormControl>
-
-                <FormControl isRequired flex="1">
-                  <FormLabel
-                    htmlFor="detail-level"
-                    fontWeight="medium"
-                    color="gray.700"
-                  >
-                    Detail Level
-                  </FormLabel>
-                  <Select
-                    id="detail-level"
-                    value={String(Math.round(traitFeedback.detail * 2))}
-                    onChange={(e) =>
-                      setTraitFeedback((prev) => ({
-                        ...prev,
-                        trait: "detail",
-                        detail: Number(e.target.value) / 2,
-                      }))
-                    }
-                    colorScheme="blue"
-                  >
-                    <option value="0">Concise</option>
-                    <option value="1">Balanced</option>
-                    <option value="2">Detailed</option>
-                  </Select>
-                </FormControl>
-
-                <FormControl isRequired flex="1">
-                  <FormLabel
-                    htmlFor="empathy-level"
-                    fontWeight="medium"
-                    color="gray.700"
-                  >
-                    Empathy Level
-                  </FormLabel>
-                  <Select
-                    id="empathy-level"
-                    value={String(Math.round(traitFeedback.empathy * 2))}
-                    onChange={(e) =>
-                      setTraitFeedback((prev) => ({
-                        ...prev,
-                        trait: "empathy",
-                        empathy: Number(e.target.value) / 2,
-                      }))
-                    }
-                    colorScheme="blue"
-                  >
-                    <option value="0">Objective</option>
-                    <option value="1">Balanced</option>
-                    <option value="2">Empathetic</option>
-                  </Select>
-                </FormControl>
-
-                <FormControl isRequired flex="1">
-                  <FormLabel
-                    htmlFor="humor-level"
-                    fontWeight="medium"
-                    color="gray.700"
-                  >
-                    Humor Level
-                  </FormLabel>
-                  <Select
-                    id="humor-level"
-                    value={String(Math.round(traitFeedback.humor * 2))}
-                    onChange={(e) =>
-                      setTraitFeedback((prev) => ({
-                        ...prev,
-                        trait: "humor",
-                        humor: Number(e.target.value) / 2,
-                      }))
-                    }
-                    colorScheme="blue"
-                  >
-                    <option value="0">Serious</option>
-                    <option value="1">Balanced</option>
-                    <option value="2">Humorous</option>
-                  </Select>
-                </FormControl>
-              </HStack>
-            </VStack>
-          </VStack>
         </VStack>
       </BaseModal>
     </>
