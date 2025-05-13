@@ -566,6 +566,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
         background: "white",
         maxWidth: "300px",
         fontSize: "sm",
+        fontFamily: "Roboto",
       },
     });
 
@@ -642,6 +643,22 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                       setSelectedModel(e.target.value as LLMModel)
                     }
                     pr={2}
+                    bg="transparent"
+                    borderWidth="1px"
+                    borderColor={colors.textColor}
+                    _hover={{ borderColor: colors.textColor, opacity: 0.8 }}
+                    _focus={{
+                      borderColor: colors.textColor,
+                      boxShadow: "none",
+                    }}
+                    fontFamily="Roboto"
+                    fontSize={{ base: "xs", sm: "sm" }}
+                    fontWeight="medium"
+                    color={colors.textColor}
+                    cursor="pointer"
+                    px={4}
+                    py={2}
+                    borderRadius="md"
                   >
                     <option value="gpt-3.5-turbo">GPT-3.5</option>
                     <option value="gpt-4">GPT-4</option>
