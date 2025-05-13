@@ -13,6 +13,8 @@ import {
   Button,
   createStandaloneToast,
   FormLabel,
+  Code,
+  Collapse,
 } from "@chakra-ui/react";
 import {
   ChatIcon,
@@ -552,7 +554,6 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
         display="flex"
         flexDirection="column"
       >
-        {showJoiner && <ChatJoiner onJoin={handleJoinChat} />}
         <Box p={{ base: 2, sm: 3, md: 4 }}>
           <Flex justify="space-between" align="center" gap={2}>
             <Flex align="center" gap={2}>
@@ -622,6 +623,8 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
             </Flex>
           </Flex>
         </Box>
+
+        {showJoiner && <ChatJoiner onJoin={handleJoinChat} />}
         <Box
           flex="1"
           overflowY="auto"

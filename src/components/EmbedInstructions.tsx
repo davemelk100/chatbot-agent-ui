@@ -24,14 +24,21 @@ export default function EmbedInstructions() {
   `;
 
   const codeBlocks = [
-    "npm install @agent-ui-lab/chatbot",
-    "import { EmbeddableChat } from '@agent-ui-lab/chatbot';",
+    "npm install @chakra-ui/react @emotion/react @emotion/styled framer-motion",
+    "import EmbeddableChat from 'path/to/EmbeddableChat';",
     `<EmbeddableChat
-  threadId={0}
-  apiKey="your-api-key"
-  position="bottom-right"
-  width="350px"
+  apiKey="your-openai-api-key"
+  model="gpt-3.5-turbo"
+  initialMessage="Hello! How can I help you today?"
+  width="100%"
   height="500px"
+  theme={{
+    primaryColor: "#3182CE",
+    backgroundColor: "#FFFFFF",
+    textColor: "#000000",
+    userMessageBg: "#3182CE",
+    assistantMessageBg: "#F7FAFC"
+  }}
 />`,
   ];
 
@@ -68,7 +75,7 @@ export default function EmbedInstructions() {
               mb={1}
               fontFamily="Avenir"
             >
-              1. Install the package
+              1. Install the required dependencies:
             </Text>
             <HStack spacing="4px" align="center">
               <Code
@@ -114,7 +121,7 @@ export default function EmbedInstructions() {
               mb={1}
               fontFamily="Avenir"
             >
-              2. Import the component
+              2. Import the component:
             </Text>
             <HStack spacing="4px" align="center">
               <Code
@@ -160,7 +167,7 @@ export default function EmbedInstructions() {
               mb={1}
               fontFamily="Avenir"
             >
-              3. Add to your page
+              3. Use the component in your app:
             </Text>
             <HStack spacing="4px" align="center">
               <Code
@@ -195,6 +202,106 @@ export default function EmbedInstructions() {
                 _hover={{ transform: "scale(1.1)", bg: "gray.100" }}
                 _active={{ transform: "scale(0.9)" }}
                 bg={copiedIndex === 2 ? "green.100" : "transparent"}
+              />
+            </HStack>
+          </Box>
+
+          <Box>
+            <Text
+              fontSize="sm"
+              fontWeight="semibold"
+              mb={1}
+              fontFamily="Avenir"
+            >
+              4. Set up the environment variable (optional):
+            </Text>
+            <HStack spacing="4px" align="center">
+              <Code
+                p={2}
+                borderRadius="md"
+                fontSize="sm"
+                display="inline-block"
+                whiteSpace="nowrap"
+              >
+                {`VITE_OPENAI_API_KEY=your-openai-api-key`}
+              </Code>
+              <IconButton
+                aria-label="Copy code"
+                icon={
+                  copiedIndex === 3 ? (
+                    <CheckIcon boxSize="16px" />
+                  ) : (
+                    <CopyIcon boxSize="16px" />
+                  )
+                }
+                size="sm"
+                onClick={() => handleCopy(codeBlocks[3], 3)}
+                colorScheme={copiedIndex === 3 ? "green" : "gray"}
+                minW="32px"
+                h="32px"
+                animation={
+                  copiedIndex === 3
+                    ? `${popAnimation} 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)`
+                    : "none"
+                }
+                transition="all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)"
+                _hover={{ transform: "scale(1.1)", bg: "gray.100" }}
+                _active={{ transform: "scale(0.9)" }}
+                bg={copiedIndex === 3 ? "green.100" : "transparent"}
+              />
+            </HStack>
+          </Box>
+
+          <Box>
+            <Text
+              fontSize="sm"
+              fontWeight="semibold"
+              mb={1}
+              fontFamily="Avenir"
+            >
+              5. Wrap your app with ChakraProvider:
+            </Text>
+            <HStack spacing="4px" align="center">
+              <Code
+                p={2}
+                borderRadius="md"
+                fontSize="sm"
+                display="inline-block"
+                whiteSpace="nowrap"
+              >
+                {`import { ChakraProvider } from '@chakra-ui/react'
+
+function App() {
+  return (
+    <ChakraProvider>
+      <YourApp />
+    </ChakraProvider>
+  )
+}`}
+              </Code>
+              <IconButton
+                aria-label="Copy code"
+                icon={
+                  copiedIndex === 4 ? (
+                    <CheckIcon boxSize="16px" />
+                  ) : (
+                    <CopyIcon boxSize="16px" />
+                  )
+                }
+                size="sm"
+                onClick={() => handleCopy(codeBlocks[4], 4)}
+                colorScheme={copiedIndex === 4 ? "green" : "gray"}
+                minW="32px"
+                h="32px"
+                animation={
+                  copiedIndex === 4
+                    ? `${popAnimation} 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)`
+                    : "none"
+                }
+                transition="all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)"
+                _hover={{ transform: "scale(1.1)", bg: "gray.100" }}
+                _active={{ transform: "scale(0.9)" }}
+                bg={copiedIndex === 4 ? "green.100" : "transparent"}
               />
             </HStack>
           </Box>
