@@ -602,16 +602,21 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
         <Box p={{ base: 2, sm: 3, md: 4 }}>
           <Flex justify="space-between" align="center" gap={2}>
             <Flex align="center" gap={2}>
-              {isThreadOne && <UserAddIcon boxSize="18px" />}
-              {isThreadTwo && <SettingsIcon boxSize="18px" />}
-              {isThreadThree && <ArrowUpIcon boxSize="18px" />}
               <Text
                 fontSize={{ base: "md", sm: "lg" }}
                 fontWeight="bold"
                 {...threadStyle}
                 color={colors.textColor}
               >
-                Chatbot {threadId + 1}
+                {isThreadOne
+                  ? "Three Way Chat"
+                  : isThreadTwo
+                  ? "Select a Model"
+                  : isThreadThree
+                  ? "Content Feedback"
+                  : isThreadFour
+                  ? "Tuning"
+                  : `Chatbot ${threadId + 1}`}
               </Text>
             </Flex>
             <Flex gap={{ base: 2, sm: 4 }} align="center">
