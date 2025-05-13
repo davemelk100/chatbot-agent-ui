@@ -5,7 +5,8 @@ export const threadDescriptions = [
   },
   {
     title: "Model Selection",
-    description: "Advanced chat with the ability to select the GPT model you prefer.",
+    description:
+      "Advanced chat with the ability to select the GPT model you prefer.",
   },
   {
     title: "Like/Dislike",
@@ -13,8 +14,7 @@ export const threadDescriptions = [
   },
   {
     title: "Personality Feedback",
-    description:
-      "Choose and rate different chatbot personalities to help improve responses.",
+    description: "Adjust the tone and personality settings of your AI agent",
   },
 ];
 

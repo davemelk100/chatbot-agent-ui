@@ -641,6 +641,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                     onChange={(e) =>
                       setSelectedModel(e.target.value as LLMModel)
                     }
+                    pr={2}
                   >
                     <option value="gpt-3.5-turbo">GPT-3.5</option>
                     <option value="gpt-4">GPT-4</option>
@@ -1067,8 +1068,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
           <Box bg="blue.50" p={3} borderRadius="md" w="100%">
             <VStack align="stretch" spacing={2}>
               <Text color="blue.700" fontSize="md" fontWeight="medium">
-                Help us improve the chatbot's personality! Adjust the sliders
-                below to fine-tune how the chatbot communicates with you.
+                Adjust the tone and personality settings of your AI agent
               </Text>
             </VStack>
           </Box>
