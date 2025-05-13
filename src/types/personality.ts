@@ -6,9 +6,13 @@ export type PersonalityTrait = {
 };
 
 export type PersonalityFeedback = {
-  trait: keyof PersonalityTrait;
+  trait: "formality" | "detail" | "empathy" | "humor";
   value: number;
   feedback: string;
+  formality: number;
+  detail: number;
+  empathy: number;
+  humor: number;
 };
 
 export const defaultPersonality: PersonalityTrait = {

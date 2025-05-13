@@ -32,11 +32,10 @@ import {
   ChatIcon,
   CloseIcon,
   AddIcon,
-  CheckIcon,
-  NotAllowedIcon,
+  ArrowUpIcon,
+  ArrowDownIcon,
   SettingsIcon,
   AddIcon as UserAddIcon,
-  ArrowUpIcon,
 } from "@chakra-ui/icons";
 import {
   errorMessages,
@@ -86,9 +85,9 @@ function formatMessageContent(content: string) {
   if (!containsCodeBlock(content)) {
     // Split content into paragraphs and wrap each in a Text component
     return content.split("\n\n").map((paragraph, index) => (
-      <Text key={index} mb={index < content.split("\n\n").length - 1 ? 2 : 0}>
+      <Box key={index} mb={index < content.split("\n\n").length - 1 ? 2 : 0}>
         {paragraph}
-      </Text>
+      </Box>
     ));
   }
 
@@ -117,7 +116,7 @@ function formatMessageContent(content: string) {
       // Inline code
       const code = part.slice(1, -1);
       return (
-        <Text
+        <Box
           key={index}
           as="span"
           fontFamily="monospace"
@@ -125,19 +124,20 @@ function formatMessageContent(content: string) {
           px={1}
           py={0.5}
           borderRadius="sm"
+          display="inline"
         >
           {code}
-        </Text>
+        </Box>
       );
     } else {
       // Regular text - split into paragraphs
       return part.split("\n\n").map((paragraph, pIndex) => (
-        <Text
+        <Box
           key={`${index}-${pIndex}`}
           mb={pIndex < part.split("\n\n").length - 1 ? 2 : 0}
         >
           {paragraph}
-        </Text>
+        </Box>
       ));
     }
   });
@@ -147,25 +147,31 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [thirdPersonInput, setThirdPersonInput] = useState("");
-  const [feedbackInput, setFeedbackInput] = useState("");
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isThirdPersonEnabled, setIsThirdPersonEnabled] = useState(false);
   const [selectedModel, setSelectedModel] = useState<LLMModel>("gpt-3.5-turbo");
-  const [feedbackMessage, setFeedbackMessage] = useState("");
   const { isOpen, onOpen, onClose } = useDisclosure();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { toast } = createStandaloneToast();
   const [showJoiner, setShowJoiner] = useState(false);
-  const { updatePersonality } = usePersonality();
+  const { updatePersonality, personality } = usePersonality();
   const [traitFeedback, setTraitFeedback] = useState<PersonalityFeedback>({
     trait: "formality",
     value: 0.5,
     feedback: "",
+    formality: 0.5,
+    detail: 0.5,
+    empathy: 0.5,
+    humor: 0.5,
   });
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
+  const [currentFeedbackIndex, setCurrentFeedbackIndex] = useState<
+    number | null
+  >(null);
 
   // Add auto-scroll effect for chat container only
   useEffect(() => {
@@ -293,11 +299,30 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
     setIsLoading(true);
 
     try {
+      const formalityLevel = ["Casual", "Neutral", "Formal"][
+        Math.round(personality.formality * 2)
+      ];
+      const detailLevel = ["Concise", "Balanced", "Detailed"][
+        Math.round(personality.detail * 2)
+      ];
+      const empathyLevel = ["Objective", "Balanced", "Empathetic"][
+        Math.round(personality.empathy * 2)
+      ];
+      const humorLevel = ["Serious", "Balanced", "Humorous"][
+        Math.round(personality.humor * 2)
+      ];
+
       const apiMessages: ChatMessage[] = [
         {
           role: "system",
           content: isThreadFour
-            ? "You are a helpful assistant that adapts its personality based on user feedback. Keep responses friendly and engaging. If the user provides feedback about your personality, acknowledge it and adjust your tone accordingly."
+            ? `You are a helpful assistant with the following personality settings:
+               - Formality: ${formalityLevel}
+               - Detail: ${detailLevel}
+               - Empathy: ${empathyLevel}
+               - Humor: ${humorLevel}
+               
+               Adjust your responses according to these settings. Keep responses friendly and engaging.`
             : `You are a helpful assistant in chat thread ${
                 threadId + 1
               }. Keep your responses concise and friendly.`,
@@ -443,51 +468,119 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
         idx === messageIndex
           ? {
               ...msg,
-              feedback,
+              feedback: msg.feedback === feedback ? null : feedback,
               feedbackText: feedback === "dislike" ? "" : undefined,
             }
           : msg
       )
     );
-    if (feedback === "dislike") {
-      setFeedbackInput("");
+  };
+
+  const handleMessageFeedbackSubmit = (messageIndex: number) => {
+    const message = messages[messageIndex];
+    if (message.feedback === "dislike" && message.feedbackText?.trim()) {
+      setCurrentFeedbackIndex(messageIndex);
+      setIsFeedbackModalOpen(true);
+    }
+  };
+
+  const handleConfirmFeedback = () => {
+    if (currentFeedbackIndex !== null) {
+      const message = messages[currentFeedbackIndex];
+      // Here you could send the feedback to your backend
+      console.log("Feedback submitted:", {
+        messageIndex: currentFeedbackIndex,
+        feedback: message.feedback,
+        feedbackText: message.feedbackText,
+      });
+
+      // Reset the feedback state
+      setMessages((prev) =>
+        prev.map((msg, idx) =>
+          idx === currentFeedbackIndex
+            ? { ...msg, feedback: null, feedbackText: undefined }
+            : msg
+        )
+      );
+      setIsFeedbackModalOpen(false);
+      setCurrentFeedbackIndex(null);
     }
   };
 
   const handleFeedbackSubmit = useCallback(() => {
-    if (feedbackMessage.trim()) {
-      // Update personality based on feedback
-      updatePersonality(traitFeedback);
+    // Create a complete personality trait object with all values
+    const personalityTrait: PersonalityFeedback = {
+      trait: traitFeedback.trait,
+      value: traitFeedback.value,
+      feedback: "", // Empty string since we removed the textarea
+      formality: Number(traitFeedback.formality),
+      detail: Number(traitFeedback.detail),
+      empathy: Number(traitFeedback.empathy),
+      humor: Number(traitFeedback.humor),
+    };
 
-      // Add feedback message to chat
-      const feedbackMsg: Message = {
-        role: "assistant",
-        content: `Feedback received: ${feedbackMessage}\nAdjusting personality traits accordingly.`,
-        model: "gpt-4",
-      };
-      setMessages((prev) => [...prev, feedbackMsg]);
+    // Update personality with all trait values
+    updatePersonality(personalityTrait);
 
-      // Reset feedback state
-      setFeedbackMessage("");
-      setTraitFeedback({
-        trait: "formality",
-        value: 0.5,
-        feedback: "",
-      });
-      onClose();
-    }
-  }, [feedbackMessage, traitFeedback, updatePersonality, onClose]);
+    // Create a feedback message that includes the current settings
+    const feedbackMsg: Message = {
+      role: "assistant",
+      content:
+        `I've saved your personality preferences! Here are your current settings:\n\n` +
+        `- Formality: ${
+          ["Casual", "Neutral", "Formal"][
+            Math.round(traitFeedback.formality * 2)
+          ]
+        }\n` +
+        `- Detail: ${
+          ["Concise", "Balanced", "Detailed"][
+            Math.round(traitFeedback.detail * 2)
+          ]
+        }\n` +
+        `- Empathy: ${
+          ["Objective", "Balanced", "Empathetic"][
+            Math.round(traitFeedback.empathy * 2)
+          ]
+        }\n` +
+        `- Humor: ${
+          ["Serious", "Balanced", "Humorous"][
+            Math.round(traitFeedback.humor * 2)
+          ]
+        }\n\n` +
+        `I'll maintain these settings for our conversation. Feel free to adjust them anytime if you'd like a different style of interaction.`,
+      model: "gpt-4",
+    };
 
-  const handleThreadFeedbackSubmit = (messageIndex: number) => {
-    if (feedbackInput.trim()) {
-      setMessages((prev) =>
-        prev.map((msg, idx) =>
-          idx === messageIndex ? { ...msg, feedbackText: feedbackInput } : msg
-        )
-      );
-      setFeedbackInput("");
-    }
-  };
+    // Add the feedback message to the chat
+    setMessages((prev) => [...prev, feedbackMsg]);
+
+    // Show success toast
+    toast({
+      title: "Settings Saved",
+      description: "Your personality preferences have been saved successfully.",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+      position: "top",
+      containerStyle: {
+        background: "white",
+        maxWidth: "300px",
+        fontSize: "sm",
+      },
+    });
+
+    // Reset feedback state
+    setTraitFeedback({
+      trait: "formality",
+      value: 0.5,
+      feedback: "",
+      formality: 0.5,
+      detail: 0.5,
+      empathy: 0.5,
+      humor: 0.5,
+    });
+    onClose();
+  }, [traitFeedback, updatePersonality, onClose, toast]);
 
   const generateShareLink = () => {
     setIsThirdPersonEnabled(true);
@@ -506,26 +599,21 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
         flexDirection="column"
       >
         {showJoiner && <ChatJoiner onJoin={handleJoinChat} />}
-        <Box
-          p={{ base: 2, sm: 3, md: 4 }}
-          borderBottom="1px"
-          borderColor={colors.borderColor}
-          bg={isThreadThree ? colors.textColor : undefined}
-        >
+        <Box p={{ base: 2, sm: 3, md: 4 }}>
           <Flex justify="space-between" align="center" gap={2}>
-            <Text
-              fontSize={{ base: "md", sm: "lg" }}
-              fontWeight="bold"
-              {...threadStyle}
-              color={isThreadThree ? colors.bg : colors.textColor}
-            >
-              <Flex align="center" gap={2}>
-                {isThreadOne && <UserAddIcon boxSize="18px" />}
-                {isThreadTwo && <SettingsIcon boxSize="18px" />}
-                {isThreadThree && <ArrowUpIcon boxSize="18px" />}
+            <Flex align="center" gap={2}>
+              {isThreadOne && <UserAddIcon boxSize="18px" />}
+              {isThreadTwo && <SettingsIcon boxSize="18px" />}
+              {isThreadThree && <ArrowUpIcon boxSize="18px" />}
+              <Text
+                fontSize={{ base: "md", sm: "lg" }}
+                fontWeight="bold"
+                {...threadStyle}
+                color={colors.textColor}
+              >
                 Chatbot {threadId + 1}
-              </Flex>
-            </Text>
+              </Text>
+            </Flex>
             <Flex gap={{ base: 2, sm: 4 }} align="center">
               {isThreadOne && !isThirdPersonEnabled && (
                 <Button
@@ -534,7 +622,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                   colorScheme="blue"
                   onClick={generateShareLink}
                   variant="solid"
-                  fontFamily="Poppins"
+                  fontFamily="Avenir"
                 >
                   Invite
                 </Button>
@@ -542,6 +630,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
               {isThreadTwo && (
                 <FormControl w="auto">
                   <Select
+                    id="model-select"
                     size={{ base: "xs", sm: "sm" }}
                     value={selectedModel}
                     onChange={(e) =>
@@ -593,7 +682,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                   borderRadius={threadId === 1 ? "0" : "lg"}
                   boxShadow="sm"
                 >
-                  <Text
+                  <Box
                     {...threadStyle}
                     fontSize={{ base: "sm", sm: "md" }}
                     color={
@@ -605,9 +694,9 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                     }
                   >
                     {formatMessageContent(message.content)}
-                  </Text>
+                  </Box>
                   {message.role === "assistant" && isThreadTwo && (
-                    <Text
+                    <Box
                       fontSize="xs"
                       color={theme.colors.secondary[500]}
                       fontStyle="italic"
@@ -621,7 +710,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                       }
                     >
                       Generated by {selectedModel}
-                    </Text>
+                    </Box>
                   )}
                   {message.role === "assistant" && isThreadFour && (
                     <Button
@@ -634,7 +723,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                       fontFamily={fonts.body.primary}
                       fontSize="xs"
                     >
-                      Rate my tone and detail
+                      Tune your bot's tone
                     </Button>
                   )}
                   {message.role === "assistant" && !isThreadFour && (
@@ -677,88 +766,83 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                     </Box>
                   )}
                   {isThreadThree && message.role === "assistant" && (
-                    <VStack align="stretch" spacing={2}>
+                    <VStack align="stretch" spacing={2} mt={2}>
                       <HStack spacing={2} justify="flex-end">
-                        <IconButton
-                          aria-label="Like message"
-                          icon={
-                            <CheckIcon
-                              color={
-                                message.feedback === "like"
-                                  ? isThreadThree
-                                    ? "green.500"
-                                    : `${getThreadColors().buttonColor}.500`
-                                  : "gray.500"
-                              }
-                            />
-                          }
-                          size={{ base: "xs", sm: "sm" }}
-                          variant={
-                            message.feedback === "like" ? "solid" : "ghost"
-                          }
-                          colorScheme={
-                            isThreadThree
-                              ? "green"
-                              : getThreadColors().buttonColor
-                          }
+                        <Box
+                          as="button"
                           onClick={() => handleFeedback(index, "like")}
-                        />
-                        <IconButton
-                          aria-label="Dislike message"
-                          icon={<NotAllowedIcon />}
-                          size={{ base: "xs", sm: "sm" }}
-                          variant={
-                            message.feedback === "dislike" ? "solid" : "ghost"
-                          }
-                          colorScheme={
-                            message.feedback === "dislike" ? "red" : "gray"
-                          }
+                          p={1}
+                          _hover={{ opacity: 0.8 }}
+                          _active={{ opacity: 0.6 }}
+                        >
+                          <ArrowUpIcon
+                            boxSize="20px"
+                            color={
+                              message.feedback === "like"
+                                ? "green.500"
+                                : "gray.500"
+                            }
+                          />
+                        </Box>
+                        <Box
+                          as="button"
                           onClick={() => handleFeedback(index, "dislike")}
-                        />
+                          p={1}
+                          _hover={{ opacity: 0.8 }}
+                          _active={{ opacity: 0.6 }}
+                        >
+                          <ArrowDownIcon
+                            boxSize="20px"
+                            color={
+                              message.feedback === "dislike"
+                                ? "red.500"
+                                : "gray.500"
+                            }
+                          />
+                        </Box>
                       </HStack>
-                      {isThreadThree &&
-                        message.feedback === "dislike" &&
-                        !message.feedbackText && (
-                          <HStack width="100%">
-                            <Input
-                              id={`feedback-input-${threadId}-${index}`}
-                              name={`feedback-input-${threadId}-${index}`}
-                              value={feedbackInput}
-                              onChange={(e) => setFeedbackInput(e.target.value)}
-                              placeholder={placeholders.feedbackInput}
-                              size={{ base: "xs", sm: "sm" }}
-                              bg="white"
-                              flex="1"
-                              fontFamily={
-                                isThreadThree
-                                  ? fonts.body.tertiary
-                                  : isThreadTwo
-                                  ? fonts.body.primary
-                                  : fonts.body.secondary
+                      {message.feedback === "dislike" && (
+                        <HStack spacing={2}>
+                          <Input
+                            placeholder="What could be improved?"
+                            size="sm"
+                            value={message.feedbackText || ""}
+                            onChange={(e) => {
+                              setMessages((prev) =>
+                                prev.map((msg, idx) =>
+                                  idx === index
+                                    ? { ...msg, feedbackText: e.target.value }
+                                    : msg
+                                )
+                              );
+                            }}
+                            bg="white"
+                            borderColor="gray.200"
+                            _hover={{ borderColor: "gray.300" }}
+                            _focus={{ borderColor: "blue.500" }}
+                            onKeyPress={(e) => {
+                              if (
+                                e.key === "Enter" &&
+                                message.feedbackText?.trim()
+                              ) {
+                                setCurrentFeedbackIndex(index);
+                                setIsFeedbackModalOpen(true);
                               }
-                              _placeholder={{
-                                fontFamily: isThreadThree
-                                  ? fonts.body.tertiary
-                                  : isThreadTwo
-                                  ? fonts.body.primary
-                                  : fonts.body.secondary,
-                                color: "gray.500",
-                              }}
-                              onKeyPress={(e) => {
-                                if (e.key === "Enter") {
-                                  handleThreadFeedbackSubmit(index);
-                                }
-                              }}
-                            />
-                            <IconButton
-                              aria-label={buttonLabels.submitFeedback}
-                              icon={<ChatIcon />}
-                              size={{ base: "xs", sm: "sm" }}
-                              colorScheme="red"
-                              onClick={() => handleThreadFeedbackSubmit(index)}
-                            />
-                          </HStack>
-                        )}
+                            }}
+                          />
+                          <Button
+                            size="sm"
+                            colorScheme="blue"
+                            onClick={() => {
+                              setCurrentFeedbackIndex(index);
+                              setIsFeedbackModalOpen(true);
+                            }}
+                            isDisabled={!message.feedbackText?.trim()}
+                          >
+                            Submit
+                          </Button>
+                        </HStack>
+                      )}
                     </VStack>
                   )}
                 </Box>
@@ -768,11 +852,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
           </VStack>
         </Box>
 
-        <Box
-          p={{ base: 2, sm: 3, md: 4 }}
-          borderTop={isThreadThree ? "0" : "1px"}
-          borderColor={colors.borderColor}
-        >
+        <Box p={{ base: 2, sm: 3, md: 4 }}>
           <VStack spacing={3}>
             {isThreadThree && imagePreview && (
               <Box position="relative" w="100%">
@@ -924,291 +1004,266 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
       </Box>
 
       <BaseModal
-        isOpen={isOpen}
-        onClose={onClose}
-        title="Provide Feedback"
-        primaryButtonText="Submit Feedback"
-        onPrimaryButtonClick={handleFeedbackSubmit}
-        isPrimaryButtonDisabled={!feedbackMessage.trim()}
+        isOpen={isFeedbackModalOpen}
+        onClose={() => {
+          setIsFeedbackModalOpen(false);
+          setCurrentFeedbackIndex(null);
+        }}
+        title="Submit Feedback"
+        primaryButtonText="Submit"
+        onPrimaryButtonClick={handleConfirmFeedback}
         secondaryButtonText="Cancel"
       >
-        <VStack spacing={6} h="100%">
-          <Text color="gray.700" fontSize="md">
-            How's my tone and the level of detail provided? Is it to your
-            satisfaction?
+        <VStack spacing={4} align="stretch">
+          <Text fontFamily="Avenir">
+            Are you sure you want to submit this feedback?
           </Text>
+          {currentFeedbackIndex !== null &&
+            messages[currentFeedbackIndex]?.feedbackText && (
+              <Box
+                p={4}
+                bg="gray.50"
+                borderRadius="md"
+                borderWidth="1px"
+                borderColor="gray.200"
+              >
+                <Text fontFamily="Avenir" color="gray.700">
+                  {messages[currentFeedbackIndex].feedbackText}
+                </Text>
+              </Box>
+            )}
+        </VStack>
+      </BaseModal>
 
-          <VStack spacing={4} w="100%" align="stretch">
+      <BaseModal
+        isOpen={isOpen}
+        onClose={onClose}
+        title={
+          <VStack align="stretch" spacing={1}>
+            <Text
+              whiteSpace="nowrap"
+              overflow="hidden"
+              textOverflow="ellipsis"
+              fontWeight="semibold"
+              fontFamily="Avenir"
+            >
+              Chatbot Personality Feedback
+            </Text>
+            <Text color="gray.600" fontSize="sm" fontFamily="Avenir">
+              Fields marked with * are required
+            </Text>
+          </VStack>
+        }
+        primaryButtonText="Submit Feedback"
+        onPrimaryButtonClick={handleFeedbackSubmit}
+        secondaryButtonText="Cancel"
+      >
+        <VStack spacing={4} h="100%">
+          <Box bg="blue.50" p={3} borderRadius="md" w="100%">
+            <VStack align="stretch" spacing={2}>
+              <Text color="blue.700" fontSize="md" fontWeight="medium">
+                Help us improve the chatbot's personality! Adjust the sliders
+                below to fine-tune how the chatbot communicates with you.
+              </Text>
+            </VStack>
+          </Box>
+
+          <VStack spacing={6} w="100%" align="stretch">
             <Box
               bg="gray.50"
               p={4}
               borderRadius="md"
               borderWidth="1px"
               borderColor="gray.200"
+              boxShadow="sm"
             >
-              <Text fontWeight="medium" mb={2}>
-                Current Settings:
+              <Text fontWeight="semibold" mb={3} color="gray.700">
+                Current Personality Settings
               </Text>
-              <VStack align="stretch" spacing={2}>
-                <Flex justify="space-between">
-                  <Text color="gray.600">Formality:</Text>
-                  <Text fontWeight="medium">
-                    {traitFeedback.trait === "formality"
-                      ? [
-                          "Very Casual",
-                          "Casual",
-                          "Neutral",
-                          "Formal",
-                          "Very Formal",
-                        ][Math.round(traitFeedback.value * 4)]
-                      : "Neutral"}
+              <VStack align="stretch" spacing={3}>
+                <Flex justify="space-between" align="center">
+                  <Text color="gray.600" fontWeight="medium">
+                    Formality:
+                  </Text>
+                  <Text
+                    fontWeight="semibold"
+                    color={
+                      traitFeedback.trait === "formality"
+                        ? "blue.600"
+                        : "gray.700"
+                    }
+                  >
+                    {
+                      ["Casual", "Neutral", "Formal"][
+                        Math.round(traitFeedback.formality * 2)
+                      ]
+                    }
                   </Text>
                 </Flex>
-                <Flex justify="space-between">
-                  <Text color="gray.600">Detail:</Text>
-                  <Text fontWeight="medium">
-                    {traitFeedback.trait === "detail"
-                      ? [
-                          "Very Concise",
-                          "Concise",
-                          "Balanced",
-                          "Detailed",
-                          "Very Detailed",
-                        ][Math.round(traitFeedback.value * 4)]
-                      : "Balanced"}
+                <Flex justify="space-between" align="center">
+                  <Text color="gray.600" fontWeight="medium">
+                    Detail:
+                  </Text>
+                  <Text
+                    fontWeight="semibold"
+                    color={
+                      traitFeedback.trait === "detail" ? "blue.600" : "gray.700"
+                    }
+                  >
+                    {
+                      ["Concise", "Balanced", "Detailed"][
+                        Math.round(traitFeedback.detail * 2)
+                      ]
+                    }
                   </Text>
                 </Flex>
-                <Flex justify="space-between">
-                  <Text color="gray.600">Empathy:</Text>
-                  <Text fontWeight="medium">
-                    {traitFeedback.trait === "empathy"
-                      ? [
-                          "Very Objective",
-                          "Objective",
-                          "Balanced",
-                          "Empathetic",
-                          "Very Empathetic",
-                        ][Math.round(traitFeedback.value * 4)]
-                      : "Balanced"}
+                <Flex justify="space-between" align="center">
+                  <Text color="gray.600" fontWeight="medium">
+                    Empathy:
+                  </Text>
+                  <Text
+                    fontWeight="semibold"
+                    color={
+                      traitFeedback.trait === "empathy"
+                        ? "blue.600"
+                        : "gray.700"
+                    }
+                  >
+                    {
+                      ["Objective", "Balanced", "Empathetic"][
+                        Math.round(traitFeedback.empathy * 2)
+                      ]
+                    }
                   </Text>
                 </Flex>
-                <Flex justify="space-between">
-                  <Text color="gray.600">Humor:</Text>
-                  <Text fontWeight="medium">
-                    {traitFeedback.trait === "humor"
-                      ? [
-                          "Very Serious",
-                          "Serious",
-                          "Balanced",
-                          "Humorous",
-                          "Very Humorous",
-                        ][Math.round(traitFeedback.value * 4)]
-                      : "Balanced"}
+                <Flex justify="space-between" align="center">
+                  <Text color="gray.600" fontWeight="medium">
+                    Humor:
+                  </Text>
+                  <Text
+                    fontWeight="semibold"
+                    color={
+                      traitFeedback.trait === "humor" ? "blue.600" : "gray.700"
+                    }
+                  >
+                    {
+                      ["Serious", "Balanced", "Humorous"][
+                        Math.round(traitFeedback.humor * 2)
+                      ]
+                    }
                   </Text>
                 </Flex>
               </VStack>
             </Box>
 
-            <FormControl>
-              <FormLabel>Formality Level</FormLabel>
-              <RadioGroup
-                value={
-                  traitFeedback.trait === "formality"
-                    ? String(Math.round(traitFeedback.value * 4))
-                    : "2"
-                }
-                onChange={(val) =>
-                  setTraitFeedback((prev) => ({
-                    ...prev,
-                    trait: "formality",
-                    value: Number(val) / 4,
-                  }))
-                }
-              >
-                <HStack spacing={4} mb={2}>
-                  <Radio value="0">Very Casual</Radio>
-                  <Radio value="1">Casual</Radio>
-                  <Radio value="2">Neutral</Radio>
-                  <Radio value="3">Formal</Radio>
-                  <Radio value="4">Very Formal</Radio>
-                </HStack>
-              </RadioGroup>
-              <Slider
-                value={
-                  traitFeedback.trait === "formality"
-                    ? traitFeedback.value * 100
-                    : 50
-                }
-                onChange={(val) =>
-                  setTraitFeedback((prev) => ({
-                    ...prev,
-                    trait: "formality",
-                    value: val / 100,
-                  }))
-                }
-              >
-                <SliderTrack>
-                  <SliderFilledTrack />
-                </SliderTrack>
-                <SliderThumb />
-              </Slider>
-            </FormControl>
+            <VStack spacing={5} w="100%" align="stretch">
+              <HStack spacing={4} align="flex-start">
+                <FormControl isRequired flex="1">
+                  <FormLabel
+                    htmlFor="formality-level"
+                    fontWeight="medium"
+                    color="gray.700"
+                  >
+                    Formality Level
+                  </FormLabel>
+                  <Select
+                    id="formality-level"
+                    value={String(Math.round(traitFeedback.formality * 2))}
+                    onChange={(e) =>
+                      setTraitFeedback((prev) => ({
+                        ...prev,
+                        trait: "formality",
+                        formality: Number(e.target.value) / 2,
+                      }))
+                    }
+                    colorScheme="blue"
+                  >
+                    <option value="0">Casual</option>
+                    <option value="1">Neutral</option>
+                    <option value="2">Formal</option>
+                  </Select>
+                </FormControl>
 
-            <FormControl>
-              <FormLabel>Detail Level</FormLabel>
-              <RadioGroup
-                value={
-                  traitFeedback.trait === "detail"
-                    ? String(Math.round(traitFeedback.value * 4))
-                    : "2"
-                }
-                onChange={(val) =>
-                  setTraitFeedback((prev) => ({
-                    ...prev,
-                    trait: "detail",
-                    value: Number(val) / 4,
-                  }))
-                }
-              >
-                <HStack spacing={4} mb={2}>
-                  <Radio value="0">Very Concise</Radio>
-                  <Radio value="1">Concise</Radio>
-                  <Radio value="2">Balanced</Radio>
-                  <Radio value="3">Detailed</Radio>
-                  <Radio value="4">Very Detailed</Radio>
-                </HStack>
-              </RadioGroup>
-              <Slider
-                value={
-                  traitFeedback.trait === "detail"
-                    ? traitFeedback.value * 100
-                    : 50
-                }
-                onChange={(val) =>
-                  setTraitFeedback((prev) => ({
-                    ...prev,
-                    trait: "detail",
-                    value: val / 100,
-                  }))
-                }
-              >
-                <SliderTrack>
-                  <SliderFilledTrack />
-                </SliderTrack>
-                <SliderThumb />
-              </Slider>
-            </FormControl>
+                <FormControl isRequired flex="1">
+                  <FormLabel
+                    htmlFor="detail-level"
+                    fontWeight="medium"
+                    color="gray.700"
+                  >
+                    Detail Level
+                  </FormLabel>
+                  <Select
+                    id="detail-level"
+                    value={String(Math.round(traitFeedback.detail * 2))}
+                    onChange={(e) =>
+                      setTraitFeedback((prev) => ({
+                        ...prev,
+                        trait: "detail",
+                        detail: Number(e.target.value) / 2,
+                      }))
+                    }
+                    colorScheme="blue"
+                  >
+                    <option value="0">Concise</option>
+                    <option value="1">Balanced</option>
+                    <option value="2">Detailed</option>
+                  </Select>
+                </FormControl>
 
-            <FormControl>
-              <FormLabel>Empathy Level</FormLabel>
-              <RadioGroup
-                value={
-                  traitFeedback.trait === "empathy"
-                    ? String(Math.round(traitFeedback.value * 4))
-                    : "2"
-                }
-                onChange={(val) =>
-                  setTraitFeedback((prev) => ({
-                    ...prev,
-                    trait: "empathy",
-                    value: Number(val) / 4,
-                  }))
-                }
-              >
-                <HStack spacing={4} mb={2}>
-                  <Radio value="0">Very Objective</Radio>
-                  <Radio value="1">Objective</Radio>
-                  <Radio value="2">Balanced</Radio>
-                  <Radio value="3">Empathetic</Radio>
-                  <Radio value="4">Very Empathetic</Radio>
-                </HStack>
-              </RadioGroup>
-              <Slider
-                value={
-                  traitFeedback.trait === "empathy"
-                    ? traitFeedback.value * 100
-                    : 50
-                }
-                onChange={(val) =>
-                  setTraitFeedback((prev) => ({
-                    ...prev,
-                    trait: "empathy",
-                    value: val / 100,
-                  }))
-                }
-              >
-                <SliderTrack>
-                  <SliderFilledTrack />
-                </SliderTrack>
-                <SliderThumb />
-              </Slider>
-            </FormControl>
+                <FormControl isRequired flex="1">
+                  <FormLabel
+                    htmlFor="empathy-level"
+                    fontWeight="medium"
+                    color="gray.700"
+                  >
+                    Empathy Level
+                  </FormLabel>
+                  <Select
+                    id="empathy-level"
+                    value={String(Math.round(traitFeedback.empathy * 2))}
+                    onChange={(e) =>
+                      setTraitFeedback((prev) => ({
+                        ...prev,
+                        trait: "empathy",
+                        empathy: Number(e.target.value) / 2,
+                      }))
+                    }
+                    colorScheme="blue"
+                  >
+                    <option value="0">Objective</option>
+                    <option value="1">Balanced</option>
+                    <option value="2">Empathetic</option>
+                  </Select>
+                </FormControl>
 
-            <FormControl>
-              <FormLabel>Humor Level</FormLabel>
-              <RadioGroup
-                value={
-                  traitFeedback.trait === "humor"
-                    ? String(Math.round(traitFeedback.value * 4))
-                    : "2"
-                }
-                onChange={(val) =>
-                  setTraitFeedback((prev) => ({
-                    ...prev,
-                    trait: "humor",
-                    value: Number(val) / 4,
-                  }))
-                }
-              >
-                <HStack spacing={4} mb={2}>
-                  <Radio value="0">Very Serious</Radio>
-                  <Radio value="1">Serious</Radio>
-                  <Radio value="2">Balanced</Radio>
-                  <Radio value="3">Humorous</Radio>
-                  <Radio value="4">Very Humorous</Radio>
-                </HStack>
-              </RadioGroup>
-              <Slider
-                value={
-                  traitFeedback.trait === "humor"
-                    ? traitFeedback.value * 100
-                    : 50
-                }
-                onChange={(val) =>
-                  setTraitFeedback((prev) => ({
-                    ...prev,
-                    trait: "humor",
-                    value: val / 100,
-                  }))
-                }
-              >
-                <SliderTrack>
-                  <SliderFilledTrack />
-                </SliderTrack>
-                <SliderThumb />
-              </Slider>
-            </FormControl>
+                <FormControl isRequired flex="1">
+                  <FormLabel
+                    htmlFor="humor-level"
+                    fontWeight="medium"
+                    color="gray.700"
+                  >
+                    Humor Level
+                  </FormLabel>
+                  <Select
+                    id="humor-level"
+                    value={String(Math.round(traitFeedback.humor * 2))}
+                    onChange={(e) =>
+                      setTraitFeedback((prev) => ({
+                        ...prev,
+                        trait: "humor",
+                        humor: Number(e.target.value) / 2,
+                      }))
+                    }
+                    colorScheme="blue"
+                  >
+                    <option value="0">Serious</option>
+                    <option value="1">Balanced</option>
+                    <option value="2">Humorous</option>
+                  </Select>
+                </FormControl>
+              </HStack>
+            </VStack>
           </VStack>
-
-          <Textarea
-            value={feedbackMessage}
-            onChange={(e) => setFeedbackMessage(e.target.value)}
-            placeholder="Share your thoughts about the tone and detail level..."
-            size="md"
-            w="100%"
-            h="100%"
-            resize="none"
-            bg="gray.50"
-            _hover={{ bg: "white" }}
-            _focus={{ bg: "white", borderColor: "blue.400" }}
-            fontSize="md"
-            borderWidth="1px"
-            borderColor="gray.200"
-            _placeholder={{
-              color: "gray.400",
-              opacity: 0.8,
-            }}
-          />
         </VStack>
       </BaseModal>
     </>

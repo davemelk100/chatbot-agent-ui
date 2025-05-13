@@ -14,7 +14,7 @@ import { fonts } from "../config/designSystem";
 interface BaseModalProps {
   isOpen: boolean;
   onClose: () => void;
-  title: string;
+  title: React.ReactNode;
   children: React.ReactNode;
   size?: "xs" | "sm" | "md" | "lg" | "xl" | "full";
   height?: string;
@@ -62,7 +62,7 @@ export default function BaseModal({
         transform="translate(-50%, -50%)"
         bg="white"
         borderRadius="lg"
-        boxShadow="xl"
+        boxShadow="0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)"
         maxW="600px"
         w="90%"
         h="700px"
@@ -72,14 +72,7 @@ export default function BaseModal({
         zIndex={1400}
         p={0}
       >
-        <Flex
-          borderBottomWidth="1px"
-          pb={4}
-          px={6}
-          pt={4}
-          justify="space-between"
-          align="center"
-        >
+        <Flex pb={4} px={6} pt={4} justify="space-between" align="center">
           <ModalHeader
             fontSize="md"
             fontFamily={fonts.body.primary}
@@ -91,7 +84,8 @@ export default function BaseModal({
           <ModalCloseButton position="static" />
         </Flex>
         <ModalBody
-          py={6}
+          pt={0}
+          pb={6}
           px={6}
           display="grid"
           gridTemplateRows="1fr"

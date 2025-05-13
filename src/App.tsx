@@ -11,7 +11,7 @@ import {
 import { Suspense } from "react";
 import { threadDescriptions } from "./config/textContent";
 import { theme } from "./config/designSystem";
-import { ChatInterface, DesignSystem } from "./components/lazy";
+import { ChatInterface } from "./components/lazy";
 import { PersonalityProvider } from "./context/PersonalityContext";
 
 function App() {
@@ -46,16 +46,16 @@ function App() {
               >
                 AGENT UI LAB
               </Text>
-              <VStack
-                spacing={{
-                  base: theme.spacing.sm,
-                  sm: theme.spacing.md,
-                  md: theme.spacing.lg,
+              <Grid
+                templateColumns={{
+                  base: "1fr",
+                  sm: "repeat(2, 1fr)",
+                  lg: "repeat(4, 1fr)",
                 }}
-                align="stretch"
+                gap={{ base: 4, sm: 6 }}
               >
                 {[0, 1, 2, 3].map((threadId) => (
-                  <Box key={threadId} w="100%">
+                  <GridItem key={threadId}>
                     <Box mb={{ base: theme.spacing.sm, sm: theme.spacing.md }}>
                       <Text
                         fontSize={{ base: "md", sm: "lg" }}
@@ -74,27 +74,12 @@ function App() {
                         {threadDescriptions[threadId].description}
                       </Text>
                     </Box>
-                    <Grid
-                      templateColumns={{
-                        base: "1fr",
-                        sm: "1fr 1fr",
-                      }}
-                      gap={{ base: 4, sm: 6 }}
-                    >
-                      <GridItem>
-                        <Suspense fallback={<div>Loading...</div>}>
-                          <ChatInterface threadId={threadId} />
-                        </Suspense>
-                      </GridItem>
-                      <GridItem>
-                        <Suspense fallback={<div>Loading...</div>}>
-                          <DesignSystem threadId={threadId} />
-                        </Suspense>
-                      </GridItem>
-                    </Grid>
-                  </Box>
+                    <Suspense fallback={<div>Loading...</div>}>
+                      <ChatInterface threadId={threadId} />
+                    </Suspense>
+                  </GridItem>
                 ))}
-              </VStack>
+              </Grid>
             </Box>
           </Box>
         </Flex>

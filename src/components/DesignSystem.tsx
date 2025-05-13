@@ -44,9 +44,8 @@ export default function DesignSystem({ threadId }: DesignSystemProps) {
         ];
       case 3:
         return [
-          "Share your thoughts about the chatbot's personality",
-          "Provide feedback on the tone and style of responses",
-          "Suggest how the personality could be improved",
+          "Review the chatbot's personality",
+          "Change the chatbot's personality",
           "The chatbot will adapt its responses based on your feedback",
         ];
       default:

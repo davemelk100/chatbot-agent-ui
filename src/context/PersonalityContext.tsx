@@ -26,7 +26,10 @@ export function PersonalityProvider({
   const updatePersonality = useCallback((feedback: PersonalityFeedback) => {
     setPersonality((prev) => ({
       ...prev,
-      [feedback.trait]: feedback.value,
+      formality: feedback.formality,
+      detail: feedback.detail,
+      empathy: feedback.empathy,
+      humor: feedback.humor,
     }));
   }, []);
 
