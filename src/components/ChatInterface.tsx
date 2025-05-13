@@ -604,7 +604,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
             <Flex align="center" gap={2}>
               <Text
                 fontSize={{ base: "md", sm: "lg" }}
-                fontWeight="bold"
+                fontWeight="medium"
                 {...threadStyle}
                 color={colors.textColor}
               >
@@ -627,7 +627,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                   colorScheme="blue"
                   onClick={generateShareLink}
                   variant="solid"
-                  fontFamily="Avenir"
+                  fontFamily="Roboto"
                 >
                   Invite
                 </Button>
@@ -684,13 +684,13 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                       : colors.assistantBg
                   }
                   color={message.role === "user" ? "white" : "black"}
-                  p={{ base: 2, sm: 3, md: 4 }}
-                  borderRadius={threadId === 1 ? "0" : "lg"}
+                  p="5px 10px"
+                  borderRadius="5px"
                   boxShadow="sm"
                 >
                   <Box
                     {...threadStyle}
-                    fontSize={{ base: "sm", sm: "md" }}
+                    fontSize={{ base: "xs", sm: "sm" }}
                     color={
                       message.role === "user"
                         ? "white"
@@ -1021,7 +1021,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
         secondaryButtonText="Cancel"
       >
         <VStack spacing={4} align="stretch">
-          <Text fontFamily="Avenir">
+          <Text fontFamily="Roboto">
             Are you sure you want to submit this feedback?
           </Text>
           {currentFeedbackIndex !== null &&
@@ -1033,7 +1033,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                 borderWidth="1px"
                 borderColor="gray.200"
               >
-                <Text fontFamily="Avenir" color="gray.700">
+                <Text fontFamily="Roboto" color="gray.700">
                   {messages[currentFeedbackIndex].feedbackText}
                 </Text>
               </Box>
@@ -1051,11 +1051,11 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
               overflow="hidden"
               textOverflow="ellipsis"
               fontWeight="semibold"
-              fontFamily="Avenir"
+              fontFamily="Roboto"
             >
               Chatbot Personality Feedback
             </Text>
-            <Text color="gray.600" fontSize="sm" fontFamily="Avenir">
+            <Text color="gray.600" fontSize="sm" fontFamily="Roboto">
               Fields marked with * are required
             </Text>
           </VStack>

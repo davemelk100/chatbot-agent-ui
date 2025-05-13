@@ -1,9 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Anek+Gurmukhi:wght@400;500&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Avenir:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap');
 
 :root {
-  font-family: Avenir, Inter, system-ui, Helvetica, Arial, sans-serif;
+  font-family: Roboto, Inter, system-ui, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 }

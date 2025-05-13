@@ -34,16 +34,16 @@ export const colors = {
 
 export const fonts = {
   heading: {
-    primary: "'Avenir', sans-serif",
-    secondary: "'Avenir', sans-serif",
-    tertiary: "'Avenir', sans-serif",
-    quaternary: "'Avenir', sans-serif",
+    primary: "'Roboto', sans-serif",
+    secondary: "'Roboto', sans-serif",
+    tertiary: "'Roboto', sans-serif",
+    quaternary: "'Roboto', sans-serif",
   },
   body: {
-    primary: "'Avenir', sans-serif",
-    secondary: "'Avenir', sans-serif",
-    tertiary: "'Avenir', sans-serif",
-    quaternary: "'Avenir', sans-serif",
+    primary: "'Roboto', sans-serif",
+    secondary: "'Roboto', sans-serif",
+    tertiary: "'Roboto', sans-serif",
+    quaternary: "'Roboto', sans-serif",
   },
 };
 
@@ -256,6 +256,7 @@ export const theme = {
     Heading: {
       baseStyle: {
         fontFamily: fonts.heading.primary,
+        fontWeight: 300,
       },
     },
     Switch: {

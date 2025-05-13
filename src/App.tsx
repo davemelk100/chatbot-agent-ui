@@ -62,7 +62,7 @@ function App() {
                         color={textColor}
                         mb={{ base: theme.spacing.xs, sm: theme.spacing.xs }}
                         fontFamily={theme.fonts.heading.primary}
-                        fontWeight="bold"
+                        fontWeight="medium"
                       >
                         {threadDescriptions[threadId].title}
                       </Text>
