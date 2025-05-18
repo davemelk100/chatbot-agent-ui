@@ -3,9 +3,17 @@
   "version": "0.1.0",
   "private": false,
   "type": "module",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "sideEffects": false,
   "files": [
     "dist"
   ],
@@ -13,8 +21,25 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepublishOnly": "npm run build"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agent-ui-lab/chatbot-agent-ui"
+  },
+  "keywords": [
+    "chatbot",
+    "react",
+    "chakra-ui",
+    "openai",
+    "gpt",
+    "ai",
+    "chat",
+    "ui"
+  ],
+  "author": "Agent UI Lab",
+  "license": "MIT",
   "dependencies": {
     "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/react": "^2.8.2",

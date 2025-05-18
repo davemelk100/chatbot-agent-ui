@@ -9,8 +9,8 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, "src/index.ts"),
       name: "AgentUIChatbot",
-      fileName: "index",
-      formats: ["es"],
+      fileName: (format) => `index.${format === "es" ? "js" : "cjs"}`,
+      formats: ["es", "cjs"],
     },
     rollupOptions: {
       external: [
@@ -34,5 +34,7 @@ export default defineConfig({
         },
       },
     },
+    sourcemap: true,
+    minify: true,
   },
 });

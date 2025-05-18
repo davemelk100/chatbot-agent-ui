@@ -259,7 +259,11 @@ export default function ThreeWayChat() {
                     ? threadColors.thread1.thirdBg
                     : threadColors.thread1.assistantBg
                 }
-                color={message.role === "user" ? "white" : "black"}
+                color={
+                  message.role === "user" || message.role === "third"
+                    ? "white"
+                    : "black"
+                }
                 p="5px 10px"
                 borderRadius="5px"
                 boxShadow="sm"
@@ -267,7 +271,11 @@ export default function ThreeWayChat() {
                 <Text
                   {...threadStyles.thread1}
                   fontSize={{ base: "xs", sm: "sm" }}
-                  color={message.role === "user" ? "white" : "black"}
+                  color={
+                    message.role === "user" || message.role === "third"
+                      ? "white"
+                      : "black"
+                  }
                 >
                   {message.content}
                 </Text>
@@ -323,7 +331,7 @@ export default function ThreeWayChat() {
           </Flex>
 
           {isThirdPersonEnabled && (
-            <Flex w="100%">
+            <Flex w="100%" gap={2}>
               <Input
                 value={thirdPersonInput}
                 onChange={(e) => setThirdPersonInput(e.target.value)}
@@ -348,26 +356,27 @@ export default function ThreeWayChat() {
                 _hover={{ borderColor: threadColors.thread1.borderColor }}
                 _focus={{ borderColor: threadColors.thread1.borderColor }}
               />
-              <IconButton
-                aria-label={buttonLabels.send}
-                icon={
-                  <ChatIcon
-                    boxSize={{ base: "20px", sm: "24px", md: "28px" }}
-                    strokeWidth="0.5"
-                  />
-                }
-                colorScheme={threadColors.thread1.buttonColor}
-                onClick={handleThirdPersonMessage}
-                size={{ base: "xs", sm: "sm", md: "md" }}
-                mr={2}
-              />
-              <IconButton
-                aria-label="Remove third person"
-                icon={<CloseIcon />}
-                colorScheme="red"
-                onClick={() => setIsThirdPersonEnabled(false)}
-                size={{ base: "xs", sm: "sm", md: "md" }}
-              />
+              <Flex gap={2}>
+                <IconButton
+                  aria-label={buttonLabels.send}
+                  icon={
+                    <ChatIcon
+                      boxSize={{ base: "20px", sm: "24px", md: "28px" }}
+                      strokeWidth="0.5"
+                    />
+                  }
+                  colorScheme={threadColors.thread1.buttonColor}
+                  onClick={handleThirdPersonMessage}
+                  size={{ base: "xs", sm: "sm", md: "md" }}
+                />
+                <IconButton
+                  aria-label="Remove third person"
+                  icon={<CloseIcon />}
+                  colorScheme="red"
+                  onClick={() => setIsThirdPersonEnabled(false)}
+                  size={{ base: "xs", sm: "sm", md: "md" }}
+                />
+              </Flex>
             </Flex>
           )}
         </VStack>
