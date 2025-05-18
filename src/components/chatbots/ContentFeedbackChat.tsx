@@ -9,6 +9,14 @@ import {
   Button,
   createStandaloneToast,
   HStack,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
+  Radio,
+  RadioGroup,
 } from "@chakra-ui/react";
 import {
   ChatIcon,
@@ -44,6 +52,11 @@ export default function ContentFeedbackChat() {
   const [currentFeedbackIndex, setCurrentFeedbackIndex] = useState<
     number | null
   >(null);
+  const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
+  const [currentRatingIndex, setCurrentRatingIndex] = useState<number | null>(
+    null
+  );
+  const [ratingValue, setRatingValue] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -179,6 +192,20 @@ export default function ContentFeedbackChat() {
     }
   };
 
+  const handleRateClick = (index: number) => {
+    setCurrentRatingIndex(index);
+    setIsRatingModalOpen(true);
+  };
+
+  const handleRatingSubmit = (feedback: "like" | "dislike") => {
+    if (currentRatingIndex !== null) {
+      handleFeedback(currentRatingIndex, feedback);
+      setIsRatingModalOpen(false);
+      setCurrentRatingIndex(null);
+      setRatingValue("");
+    }
+  };
+
   return (
     <>
       <Box
@@ -253,38 +280,16 @@ export default function ContentFeedbackChat() {
                   {message.role === "assistant" && (
                     <VStack align="stretch" spacing={2} mt={2}>
                       <HStack spacing={2} justify="flex-end">
-                        <Box
-                          as="button"
-                          onClick={() => handleFeedback(index, "like")}
-                          p={1}
-                          _hover={{ opacity: 0.8 }}
-                          _active={{ opacity: 0.6 }}
+                        <Button
+                          size="sm"
+                          variant="link"
+                          color="blue.500"
+                          onClick={() => handleRateClick(index)}
+                          _hover={{ textDecoration: "underline" }}
+                          fontSize="xs"
                         >
-                          <ArrowUpIcon
-                            boxSize="20px"
-                            color={
-                              message.feedback === "like"
-                                ? "green.500"
-                                : "gray.500"
-                            }
-                          />
-                        </Box>
-                        <Box
-                          as="button"
-                          onClick={() => handleFeedback(index, "dislike")}
-                          p={1}
-                          _hover={{ opacity: 0.8 }}
-                          _active={{ opacity: 0.6 }}
-                        >
-                          <ArrowDownIcon
-                            boxSize="20px"
-                            color={
-                              message.feedback === "dislike"
-                                ? "red.500"
-                                : "gray.500"
-                            }
-                          />
-                        </Box>
+                          Rate this response
+                        </Button>
                       </HStack>
                       {message.feedback === "dislike" && (
                         <HStack spacing={2}>
@@ -412,6 +417,124 @@ export default function ContentFeedbackChat() {
         </Box>
       </Box>
 
+      {/* Rating Modal */}
+      <Modal
+        isOpen={isRatingModalOpen}
+        onClose={() => {
+          setIsRatingModalOpen(false);
+          setCurrentRatingIndex(null);
+        }}
+        isCentered
+        motionPreset="slideInBottom"
+        size="full"
+      >
+        <ModalOverlay backdropFilter="blur(2px)" />
+        <ModalContent
+          bg={threadColors.thread3.bg}
+          borderRadius="lg"
+          boxShadow="0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
+          fontFamily={fonts.body.primary}
+          w="30vw"
+          h="50vh"
+          maxW="none"
+          mx="auto"
+          mt="20vh"
+          display="flex"
+          flexDirection="column"
+          position="relative"
+        >
+          <ModalHeader
+            fontSize={{ base: "sm", sm: "md" }}
+            fontWeight="medium"
+            color={threadColors.thread3.textColor}
+            borderBottomWidth="1px"
+            borderColor={threadColors.thread3.borderColor}
+            pb={2}
+            pt={3}
+            px={4}
+            position="relative"
+            textAlign="left"
+          >
+            Rate this response
+            <ModalCloseButton
+              color={threadColors.thread3.textColor}
+              _hover={{ color: threadColors.thread3.buttonColor }}
+              size="sm"
+              position="absolute"
+              top="50%"
+              right={2}
+              transform="translateY(-50%)"
+            />
+          </ModalHeader>
+          <ModalBody
+            p={6}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <VStack spacing={4} align="stretch" w="100%">
+              <Button
+                size="lg"
+                variant={ratingValue === "like" ? "solid" : "outline"}
+                colorScheme="green"
+                onClick={() => {
+                  setRatingValue("like");
+                  handleRatingSubmit("like");
+                }}
+                _hover={{
+                  bg: ratingValue === "like" ? "green.500" : "green.50",
+                }}
+                height="48px"
+                fontSize="md"
+                fontWeight="medium"
+                borderRadius="md"
+                boxShadow="sm"
+                borderWidth="2px"
+                _active={{
+                  transform: "scale(0.95)",
+                  transition: "transform 0.1s ease-in-out",
+                  bg: "black",
+                  color: "white",
+                  borderColor: "black",
+                }}
+                transition="all 0.2s ease-in-out"
+              >
+                Good Response
+              </Button>
+              <Button
+                size="lg"
+                variant={ratingValue === "dislike" ? "solid" : "outline"}
+                colorScheme="red"
+                onClick={() => {
+                  setRatingValue("dislike");
+                  handleRatingSubmit("dislike");
+                }}
+                _hover={{
+                  bg: ratingValue === "dislike" ? "red.500" : "red.50",
+                }}
+                height="48px"
+                fontSize="md"
+                fontWeight="medium"
+                borderRadius="md"
+                boxShadow="sm"
+                borderWidth="2px"
+                _active={{
+                  transform: "scale(0.95)",
+                  transition: "transform 0.1s ease-in-out",
+                  bg: "black",
+                  color: "white",
+                  borderColor: "black",
+                }}
+                transition="all 0.2s ease-in-out"
+              >
+                Needs Improvement
+              </Button>
+            </VStack>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+
+      {/* Existing Feedback Modal */}
       <BaseModal
         isOpen={isFeedbackModalOpen}
         onClose={() => {
