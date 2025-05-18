@@ -261,10 +261,11 @@ Adjust your responses based on these traits.`;
           borderRadius="lg"
           boxShadow="0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
           fontFamily={fonts.body.primary}
-          w="50vw"
+          w="30vw"
           h="50vh"
           maxW="none"
           mx="auto"
+          mt="20vh"
           display="flex"
           flexDirection="column"
           position="relative"
