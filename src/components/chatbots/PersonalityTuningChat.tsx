@@ -270,15 +270,6 @@ Adjust your responses based on these traits.`;
           flexDirection="column"
           position="relative"
         >
-          <ModalCloseButton
-            color={threadColors.thread2.textColor}
-            _hover={{ color: threadColors.thread2.buttonColor }}
-            size="sm"
-            position="absolute"
-            top={2}
-            right={2}
-            zIndex={1}
-          />
           <ModalHeader
             fontSize={{ base: "sm", sm: "md" }}
             fontWeight="medium"
@@ -288,8 +279,20 @@ Adjust your responses based on these traits.`;
             pb={2}
             pt={3}
             px={4}
+            position="relative"
+            textAlign="left"
           >
             Adjust Bot's Tone
+            <ModalCloseButton
+              color={threadColors.thread2.textColor}
+              _hover={{ color: threadColors.thread2.buttonColor }}
+              size="sm"
+              position="absolute"
+              top="50%"
+              right={2}
+              transform="translateY(-50%)"
+              zIndex={1}
+            />
           </ModalHeader>
           <ModalBody py={3} px={4} flex="1" overflowY="auto">
             <VStack
@@ -450,13 +453,21 @@ Adjust your responses based on these traits.`;
                 width="100%"
                 size="sm"
                 fontWeight="medium"
-                h="28px"
+                h="36px"
+                px={6}
+                borderRadius="full"
+                bg="white"
+                color={threadColors.thread2.buttonColor}
+                boxShadow="0 2px 4px rgba(0, 0, 0, 0.1)"
                 _hover={{
                   transform: "translateY(-1px)",
-                  boxShadow: "sm",
+                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                  bg: "gray.50",
                 }}
                 _active={{
                   transform: "translateY(0)",
+                  boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+                  bg: "gray.100",
                 }}
               >
                 Save Settings
