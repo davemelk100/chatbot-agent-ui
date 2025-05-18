@@ -24,14 +24,15 @@ export default function EmbedInstructions() {
   `;
 
   const codeBlocks = [
-    "npm install @chakra-ui/react @emotion/react @emotion/styled framer-motion",
-    "import EmbeddableChat from 'path/to/EmbeddableChat';",
+    "npm install chatbot-agent-ui",
+    "import { EmbeddableChat } from 'chatbot-agent-ui';",
     `<EmbeddableChat
   apiKey="your-openai-api-key"
   model="gpt-3.5-turbo"
   initialMessage="Hello! How can I help you today?"
-  width="100%"
-  height="500px"
+  width="400px"
+  height="600px"
+  position="bottom-right"
   theme={{
     primaryColor: "#3182CE",
     backgroundColor: "#FFFFFF",
@@ -40,6 +41,16 @@ export default function EmbedInstructions() {
     assistantMessageBg: "#F7FAFC"
   }}
 />`,
+    "VITE_OPENAI_API_KEY=your-openai-api-key",
+    `import { ChakraProvider } from '@chakra-ui/react'
+
+function App() {
+  return (
+    <ChakraProvider>
+      <YourApp />
+    </ChakraProvider>
+  )
+}`,
   ];
 
   const handleCopy = (text: string, index: number) => {

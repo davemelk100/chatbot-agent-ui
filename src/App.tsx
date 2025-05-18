@@ -11,6 +11,7 @@ import {
   Button,
   Collapse,
 } from "@chakra-ui/react";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 import { Suspense, useState } from "react";
 import { threadDescriptions } from "./config/textContent";
 import { theme } from "./config/designSystem";
@@ -60,10 +61,18 @@ function App() {
                   }
                   fontFamily="Roboto"
                   mb={2}
+                  rightIcon={
+                    <ChevronDownIcon
+                      transform={
+                        showEmbedInstructions ? "rotate(180deg)" : "none"
+                      }
+                      transition="transform 0.2s"
+                    />
+                  }
                 >
                   {showEmbedInstructions
                     ? "Hide Embed Instructions"
-                    : "Show Embed Instructions"}
+                    : "Show Embed Instructions (Beta)"}
                 </Button>
 
                 <Collapse in={showEmbedInstructions}>
@@ -86,7 +95,7 @@ function App() {
 
                       <Box>
                         <Text fontSize="sm" mb={1} fontFamily="Roboto">
-                          1. Install dependencies:
+                          1. Install the package:
                         </Text>
                         <Code
                           p={2}
@@ -95,7 +104,7 @@ function App() {
                           display="block"
                           whiteSpace="pre"
                         >
-                          {`npm install @chakra-ui/react @emotion/react @emotion/styled framer-motion`}
+                          {`npm install chatbot-agent-ui`}
                         </Code>
                       </Box>
 
@@ -110,7 +119,7 @@ function App() {
                           display="block"
                           whiteSpace="pre"
                         >
-                          {`import EmbeddableChat from 'path/to/EmbeddableChat';`}
+                          {`import { EmbeddableChat } from 'chatbot-agent-ui';`}
                         </Code>
                       </Box>
 
@@ -127,10 +136,11 @@ function App() {
                         >
                           {`<EmbeddableChat
   apiKey="your-openai-api-key"  // Optional if using environment variable
-  model="gpt-3.5-turbo"         // Optional
+  model="gpt-3.5-turbo"         // Optional, defaults to gpt-3.5-turbo
   initialMessage="Hello! How can I help you today?"  // Optional
-  width="100%"                  // Optional
-  height="500px"               // Optional
+  width="400px"                 // Optional, defaults to 100%
+  height="600px"               // Optional, defaults to 500px
+  position="bottom-right"      // Optional, defaults to bottom-right
   theme={{                     // Optional
     primaryColor: "#3182CE",
     backgroundColor: "#FFFFFF",
