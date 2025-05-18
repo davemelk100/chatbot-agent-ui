@@ -6,17 +6,11 @@ interface DesignSystemProps {
   threadId: number;
 }
 
-type ThreadKey = "thread1" | "thread2" | "thread3" | "thread4";
+type ThreadKey = "thread1" | "thread3" | "thread4";
 
 export default function DesignSystem({ threadId }: DesignSystemProps) {
   const threadKey: ThreadKey =
-    threadId === 0
-      ? "thread1"
-      : threadId === 1
-      ? "thread2"
-      : threadId === 2
-      ? "thread3"
-      : "thread4";
+    threadId === 0 ? "thread1" : threadId === 2 ? "thread3" : "thread4";
   const colors = threadColors[threadKey];
 
   const getInstructions = () => {
@@ -27,13 +21,6 @@ export default function DesignSystem({ threadId }: DesignSystemProps) {
           "Click the chat icon or press Enter to send",
           "Click 'Invite' to add another person to the chat",
           "The other person can join using the shared link",
-        ];
-      case 1:
-        return [
-          "Select different AI models from the dropdown",
-          "Try GPT-3.5 for faster responses",
-          "Use GPT-4 for more complex tasks",
-          "GPT-4 Turbo offers the best balance of speed and quality",
         ];
       case 2:
         return [
@@ -59,7 +46,7 @@ export default function DesignSystem({ threadId }: DesignSystemProps) {
       h={{ base: "80vh", sm: "75vh", md: "70vh" }}
       bg={colors.bg}
       p={{ base: 2, sm: 3, md: 4 }}
-      borderRadius={threadId === 1 ? "0" : "lg"}
+      borderRadius="lg"
       boxShadow={theme.shadows.sm}
       overflowY="auto"
     >

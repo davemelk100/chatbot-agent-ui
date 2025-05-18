@@ -187,11 +187,11 @@ function App() {
                 templateColumns={{
                   base: "1fr",
                   sm: "repeat(2, 1fr)",
-                  lg: "repeat(4, 1fr)",
+                  lg: "repeat(3, 1fr)",
                 }}
                 gap={{ base: 4, sm: 6 }}
               >
-                {[0, 1, 2, 3].map((threadId) => (
+                {[0, 1, 2].map((threadId) => (
                   <GridItem key={threadId}>
                     <Box mb={{ base: theme.spacing.sm, sm: theme.spacing.md }}>
                       <Text

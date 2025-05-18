@@ -4,11 +4,6 @@ export const threadDescriptions = [
     description: "A chatbot that can add a third person to the conversation.",
   },
   {
-    title: "Model Selection",
-    description:
-      "Advanced chat with the ability to select the GPT model you prefer.",
-  },
-  {
     title: "Like/Dislike",
     description: "Feedback-focused chat with like/dislike functionality.",
   },
