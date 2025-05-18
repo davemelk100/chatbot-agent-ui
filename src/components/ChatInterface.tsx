@@ -156,6 +156,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
     humor: 0.5,
   });
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
+  const [isToneModalOpen, setIsToneModalOpen] = useState(false);
   const [currentFeedbackIndex, setCurrentFeedbackIndex] = useState<
     number | null
   >(null);
@@ -542,6 +543,15 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
     setIsThirdPersonEnabled(true);
   };
 
+  const handleToneButtonClick = () => {
+    setIsToneModalOpen(true);
+  };
+
+  const handleToneSubmit = () => {
+    handleFeedbackSubmit();
+    setIsToneModalOpen(false);
+  };
+
   return (
     <>
       <Box
@@ -698,7 +708,7 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                       colorScheme={colors.buttonColor}
                       mt={2}
                       leftIcon={<ChatIcon boxSize="14px" />}
-                      onClick={handleFeedbackSubmit}
+                      onClick={handleToneButtonClick}
                       fontFamily={fonts.body.primary}
                       fontSize="xs"
                     >
@@ -985,6 +995,85 @@ export default function ChatInterface({ threadId }: ChatInterfaceProps) {
                 </Text>
               </Box>
             )}
+        </VStack>
+      </BaseModal>
+
+      <BaseModal
+        isOpen={isToneModalOpen}
+        onClose={() => setIsToneModalOpen(false)}
+        title="Adjust Bot's Tone"
+        primaryButtonText="Save"
+        onPrimaryButtonClick={handleToneSubmit}
+        secondaryButtonText="Cancel"
+      >
+        <VStack spacing={4} align="stretch">
+          <FormControl>
+            <FormLabel>Formality</FormLabel>
+            <Select
+              value={traitFeedback.formality}
+              onChange={(e) =>
+                setTraitFeedback((prev) => ({
+                  ...prev,
+                  formality: Number(e.target.value),
+                }))
+              }
+            >
+              <option value={0}>Casual</option>
+              <option value={0.5}>Neutral</option>
+              <option value={1}>Formal</option>
+            </Select>
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>Detail Level</FormLabel>
+            <Select
+              value={traitFeedback.detail}
+              onChange={(e) =>
+                setTraitFeedback((prev) => ({
+                  ...prev,
+                  detail: Number(e.target.value),
+                }))
+              }
+            >
+              <option value={0}>Concise</option>
+              <option value={0.5}>Balanced</option>
+              <option value={1}>Detailed</option>
+            </Select>
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>Empathy</FormLabel>
+            <Select
+              value={traitFeedback.empathy}
+              onChange={(e) =>
+                setTraitFeedback((prev) => ({
+                  ...prev,
+                  empathy: Number(e.target.value),
+                }))
+              }
+            >
+              <option value={0}>Objective</option>
+              <option value={0.5}>Balanced</option>
+              <option value={1}>Empathetic</option>
+            </Select>
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>Humor</FormLabel>
+            <Select
+              value={traitFeedback.humor}
+              onChange={(e) =>
+                setTraitFeedback((prev) => ({
+                  ...prev,
+                  humor: Number(e.target.value),
+                }))
+              }
+            >
+              <option value={0}>Serious</option>
+              <option value={0.5}>Balanced</option>
+              <option value={1}>Humorous</option>
+            </Select>
+          </FormControl>
         </VStack>
       </BaseModal>
     </>
