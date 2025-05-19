@@ -10,7 +10,12 @@ import {
   Button,
   CSSReset,
 } from "@chakra-ui/react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  NavLink,
+} from "react-router-dom";
 import EmbeddableChat from "./components/EmbeddableChat";
 import EmbedInstructions from "./pages/EmbedInstructions";
 import { theme } from "./config/designSystem";
@@ -22,6 +27,8 @@ function App() {
     theme.colors.secondary[100]
   );
   const borderColor = useColorModeValue("gray.200", "gray.700");
+  const activeBgColor = useColorModeValue("blue.50", "blue.900");
+  const activeTextColor = useColorModeValue("blue.600", "blue.200");
 
   return (
     <ChakraProvider>
@@ -45,16 +52,40 @@ function App() {
               color={textColor}
               fontFamily={theme.fonts.heading.primary}
               alignSelf="flex-start"
+              pl={1}
             >
               AI AGENT LAB
             </Text>
             <Box alignSelf="flex-start">
-              <Link to="/">
-                <Button variant="ghost">Home</Button>
-              </Link>
-              <Link to="/embed">
-                <Button variant="ghost">Embed Instructions</Button>
-              </Link>
+              <NavLink to="/" end>
+                {({ isActive }) => (
+                  <Button
+                    variant="ghost"
+                    bg={isActive ? activeBgColor : "transparent"}
+                    color={isActive ? activeTextColor : textColor}
+                    _hover={{
+                      bg: isActive ? activeBgColor : "gray.100",
+                    }}
+                    mr={2}
+                  >
+                    Home
+                  </Button>
+                )}
+              </NavLink>
+              <NavLink to="/embed">
+                {({ isActive }) => (
+                  <Button
+                    variant="ghost"
+                    bg={isActive ? activeBgColor : "transparent"}
+                    color={isActive ? activeTextColor : textColor}
+                    _hover={{
+                      bg: isActive ? activeBgColor : "gray.100",
+                    }}
+                  >
+                    Embed Instructions
+                  </Button>
+                )}
+              </NavLink>
             </Box>
           </Flex>
 
