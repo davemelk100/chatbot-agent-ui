@@ -15,15 +15,8 @@ import {
   ModalHeader,
   ModalBody,
   ModalCloseButton,
-  Radio,
-  RadioGroup,
 } from "@chakra-ui/react";
-import {
-  ChatIcon,
-  CloseIcon,
-  ArrowUpIcon,
-  ArrowDownIcon,
-} from "@chakra-ui/icons";
+import { ChatIcon, CloseIcon } from "@chakra-ui/icons";
 import {
   placeholders,
   buttonLabels,
@@ -434,8 +427,8 @@ export default function ContentFeedbackChat() {
           borderRadius="lg"
           boxShadow="0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
           fontFamily={fonts.body.primary}
-          w="30vw"
-          h="50vh"
+          w="40vw"
+          h="60vh"
           maxW="none"
           mx="auto"
           mt="20vh"
@@ -472,62 +465,88 @@ export default function ContentFeedbackChat() {
             alignItems="center"
             justifyContent="center"
           >
-            <VStack spacing={4} align="stretch" w="100%">
+            <VStack spacing={6} align="stretch" w="100%">
+              <VStack spacing={4} align="stretch">
+                <Button
+                  size="lg"
+                  variant={ratingValue === "like" ? "solid" : "outline"}
+                  colorScheme="green"
+                  onClick={() => setRatingValue("like")}
+                  _hover={{
+                    bg: ratingValue === "like" ? "black" : "green.50",
+                  }}
+                  height="48px"
+                  fontSize="md"
+                  fontWeight="medium"
+                  borderRadius="md"
+                  boxShadow="sm"
+                  borderWidth="2px"
+                  _active={{
+                    transform: "scale(0.95)",
+                    transition: "transform 0.1s ease-in-out",
+                  }}
+                  bg={ratingValue === "like" ? "black" : undefined}
+                  color={ratingValue === "like" ? "white" : undefined}
+                  borderColor={ratingValue === "like" ? "black" : undefined}
+                  transition="all 0.2s ease-in-out"
+                >
+                  Good Response
+                </Button>
+                <Button
+                  size="lg"
+                  variant={ratingValue === "dislike" ? "solid" : "outline"}
+                  colorScheme="red"
+                  onClick={() => setRatingValue("dislike")}
+                  _hover={{
+                    bg: ratingValue === "dislike" ? "black" : "red.50",
+                  }}
+                  height="48px"
+                  fontSize="md"
+                  fontWeight="medium"
+                  borderRadius="md"
+                  boxShadow="sm"
+                  borderWidth="2px"
+                  _active={{
+                    transform: "scale(0.95)",
+                    transition: "transform 0.1s ease-in-out",
+                  }}
+                  bg={ratingValue === "dislike" ? "black" : undefined}
+                  color={ratingValue === "dislike" ? "white" : undefined}
+                  borderColor={ratingValue === "dislike" ? "black" : undefined}
+                  transition="all 0.2s ease-in-out"
+                >
+                  Needs Improvement
+                </Button>
+              </VStack>
               <Button
-                size="lg"
-                variant={ratingValue === "like" ? "solid" : "outline"}
-                colorScheme="green"
+                colorScheme={threadColors.thread3.buttonColor}
                 onClick={() => {
-                  setRatingValue("like");
-                  handleRatingSubmit("like");
+                  if (ratingValue) {
+                    handleRatingSubmit(ratingValue as "like" | "dislike");
+                  }
                 }}
-                _hover={{
-                  bg: ratingValue === "like" ? "green.500" : "green.50",
-                }}
-                height="48px"
-                fontSize="md"
+                isDisabled={!ratingValue}
+                width="100%"
+                size="sm"
                 fontWeight="medium"
-                borderRadius="md"
-                boxShadow="sm"
-                borderWidth="2px"
-                _active={{
-                  transform: "scale(0.95)",
-                  transition: "transform 0.1s ease-in-out",
-                  bg: "black",
-                  color: "white",
-                  borderColor: "black",
-                }}
-                transition="all 0.2s ease-in-out"
-              >
-                Good Response
-              </Button>
-              <Button
-                size="lg"
-                variant={ratingValue === "dislike" ? "solid" : "outline"}
-                colorScheme="red"
-                onClick={() => {
-                  setRatingValue("dislike");
-                  handleRatingSubmit("dislike");
-                }}
+                h="36px"
+                px={6}
+                borderRadius="full"
+                bg="white"
+                color={threadColors.thread3.buttonColor}
+                boxShadow="0 2px 4px rgba(0, 0, 0, 0.1)"
                 _hover={{
-                  bg: ratingValue === "dislike" ? "red.500" : "red.50",
+                  transform: "translateY(-1px)",
+                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                  bg: "gray.50",
                 }}
-                height="48px"
-                fontSize="md"
-                fontWeight="medium"
-                borderRadius="md"
-                boxShadow="sm"
-                borderWidth="2px"
                 _active={{
-                  transform: "scale(0.95)",
-                  transition: "transform 0.1s ease-in-out",
-                  bg: "black",
-                  color: "white",
-                  borderColor: "black",
+                  transform: "translateY(0)",
+                  boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+                  bg: "gray.100",
                 }}
-                transition="all 0.2s ease-in-out"
               >
-                Needs Improvement
+                Submit Feedback
               </Button>
             </VStack>
           </ModalBody>

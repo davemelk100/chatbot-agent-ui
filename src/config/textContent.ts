@@ -1,15 +1,15 @@
 export const threadDescriptions = [
   {
     title: "Third Person",
-    description: "A chatbot that can add a third person to the conversation.",
+    description: "Add a third person",
   },
   {
     title: "Like/Dislike",
-    description: "Feedback-focused chat with like/dislike functionality.",
+    description: "Like/dislike functionality",
   },
   {
     title: "Personality Feedback",
-    description: "Adjust the tone and personality settings of your AI agent",
+    description: "Adjust the personality settings",
   },
 ];
 
