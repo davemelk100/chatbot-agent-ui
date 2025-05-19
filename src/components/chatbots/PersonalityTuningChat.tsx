@@ -253,7 +253,7 @@ Adjust your responses based on these traits.`;
         onClose={onClose}
         isCentered
         motionPreset="slideInBottom"
-        size="full"
+        size="md"
       >
         <ModalOverlay backdropFilter="blur(2px)" />
         <ModalContent
@@ -261,8 +261,7 @@ Adjust your responses based on these traits.`;
           borderRadius="lg"
           boxShadow="0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
           fontFamily={fonts.body.primary}
-          w="45vw"
-          h="65vh"
+          w="400px"
           maxW="none"
           mx="auto"
           mt="20vh"
@@ -294,158 +293,151 @@ Adjust your responses based on these traits.`;
               zIndex={1}
             />
           </ModalHeader>
-          <ModalBody py={3} px={4} flex="1" overflowY="auto">
-            <VStack
-              spacing={2}
-              align="stretch"
-              h="100%"
-              justify="space-between"
-            >
-              <VStack spacing={2} align="stretch" flex="1">
-                <FormControl>
-                  <Flex justify="space-between" align="center" mb={1}>
-                    <FormLabel
-                      fontSize="xs"
-                      fontWeight="medium"
-                      color={threadColors.thread2.textColor}
-                      mb={0}
-                    >
-                      Formality
-                    </FormLabel>
-                  </Flex>
-                  <NumberInput
-                    value={personalityTraits.formality}
-                    onChange={(_, value) =>
-                      setPersonalityTraits((prev) => ({
-                        ...prev,
-                        formality: value,
-                      }))
-                    }
-                    min={1}
-                    max={10}
-                    size="md"
+          <ModalBody py={3} px={4}>
+            <VStack spacing={3} align="stretch">
+              <FormControl>
+                <Flex justify="space-between" align="center" mb={1}>
+                  <FormLabel
+                    fontSize="xs"
+                    fontWeight="medium"
+                    color={threadColors.thread2.textColor}
+                    mb={0}
                   >
-                    <NumberInputField
-                      bg="white"
-                      borderColor={threadColors.thread2.borderColor}
-                      h="40px"
-                      fontSize="md"
-                    />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper h="20px" />
-                      <NumberDecrementStepper h="20px" />
-                    </NumberInputStepper>
-                  </NumberInput>
-                </FormControl>
+                    Formality
+                  </FormLabel>
+                </Flex>
+                <NumberInput
+                  value={personalityTraits.formality}
+                  onChange={(_, value) =>
+                    setPersonalityTraits((prev) => ({
+                      ...prev,
+                      formality: value,
+                    }))
+                  }
+                  min={1}
+                  max={10}
+                  size="sm"
+                >
+                  <NumberInputField
+                    bg="white"
+                    borderColor={threadColors.thread2.borderColor}
+                    h="32px"
+                    fontSize="sm"
+                  />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper h="16px" />
+                    <NumberDecrementStepper h="16px" />
+                  </NumberInputStepper>
+                </NumberInput>
+              </FormControl>
 
-                <FormControl>
-                  <Flex justify="space-between" align="center" mb={1}>
-                    <FormLabel
-                      fontSize="xs"
-                      fontWeight="medium"
-                      color={threadColors.thread2.textColor}
-                      mb={0}
-                    >
-                      Detail Level
-                    </FormLabel>
-                  </Flex>
-                  <NumberInput
-                    value={personalityTraits.detailLevel}
-                    onChange={(_, value) =>
-                      setPersonalityTraits((prev) => ({
-                        ...prev,
-                        detailLevel: value,
-                      }))
-                    }
-                    min={1}
-                    max={10}
-                    size="md"
+              <FormControl>
+                <Flex justify="space-between" align="center" mb={1}>
+                  <FormLabel
+                    fontSize="xs"
+                    fontWeight="medium"
+                    color={threadColors.thread2.textColor}
+                    mb={0}
                   >
-                    <NumberInputField
-                      bg="white"
-                      borderColor={threadColors.thread2.borderColor}
-                      h="40px"
-                      fontSize="md"
-                    />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper h="20px" />
-                      <NumberDecrementStepper h="20px" />
-                    </NumberInputStepper>
-                  </NumberInput>
-                </FormControl>
+                    Detail Level
+                  </FormLabel>
+                </Flex>
+                <NumberInput
+                  value={personalityTraits.detailLevel}
+                  onChange={(_, value) =>
+                    setPersonalityTraits((prev) => ({
+                      ...prev,
+                      detailLevel: value,
+                    }))
+                  }
+                  min={1}
+                  max={10}
+                  size="sm"
+                >
+                  <NumberInputField
+                    bg="white"
+                    borderColor={threadColors.thread2.borderColor}
+                    h="32px"
+                    fontSize="sm"
+                  />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper h="16px" />
+                    <NumberDecrementStepper h="16px" />
+                  </NumberInputStepper>
+                </NumberInput>
+              </FormControl>
 
-                <FormControl>
-                  <Flex justify="space-between" align="center" mb={1}>
-                    <FormLabel
-                      fontSize="xs"
-                      fontWeight="medium"
-                      color={threadColors.thread2.textColor}
-                      mb={0}
-                    >
-                      Empathy
-                    </FormLabel>
-                  </Flex>
-                  <NumberInput
-                    value={personalityTraits.empathy}
-                    onChange={(_, value) =>
-                      setPersonalityTraits((prev) => ({
-                        ...prev,
-                        empathy: value,
-                      }))
-                    }
-                    min={1}
-                    max={10}
-                    size="md"
+              <FormControl>
+                <Flex justify="space-between" align="center" mb={1}>
+                  <FormLabel
+                    fontSize="xs"
+                    fontWeight="medium"
+                    color={threadColors.thread2.textColor}
+                    mb={0}
                   >
-                    <NumberInputField
-                      bg="white"
-                      borderColor={threadColors.thread2.borderColor}
-                      h="40px"
-                      fontSize="md"
-                    />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper h="20px" />
-                      <NumberDecrementStepper h="20px" />
-                    </NumberInputStepper>
-                  </NumberInput>
-                </FormControl>
+                    Empathy
+                  </FormLabel>
+                </Flex>
+                <NumberInput
+                  value={personalityTraits.empathy}
+                  onChange={(_, value) =>
+                    setPersonalityTraits((prev) => ({
+                      ...prev,
+                      empathy: value,
+                    }))
+                  }
+                  min={1}
+                  max={10}
+                  size="sm"
+                >
+                  <NumberInputField
+                    bg="white"
+                    borderColor={threadColors.thread2.borderColor}
+                    h="32px"
+                    fontSize="sm"
+                  />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper h="16px" />
+                    <NumberDecrementStepper h="16px" />
+                  </NumberInputStepper>
+                </NumberInput>
+              </FormControl>
 
-                <FormControl>
-                  <Flex justify="space-between" align="center" mb={1}>
-                    <FormLabel
-                      fontSize="xs"
-                      fontWeight="medium"
-                      color={threadColors.thread2.textColor}
-                      mb={0}
-                    >
-                      Humor
-                    </FormLabel>
-                  </Flex>
-                  <NumberInput
-                    value={personalityTraits.humor}
-                    onChange={(_, value) =>
-                      setPersonalityTraits((prev) => ({
-                        ...prev,
-                        humor: value,
-                      }))
-                    }
-                    min={1}
-                    max={10}
-                    size="md"
+              <FormControl>
+                <Flex justify="space-between" align="center" mb={1}>
+                  <FormLabel
+                    fontSize="xs"
+                    fontWeight="medium"
+                    color={threadColors.thread2.textColor}
+                    mb={0}
                   >
-                    <NumberInputField
-                      bg="white"
-                      borderColor={threadColors.thread2.borderColor}
-                      h="40px"
-                      fontSize="md"
-                    />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper h="20px" />
-                      <NumberDecrementStepper h="20px" />
-                    </NumberInputStepper>
-                  </NumberInput>
-                </FormControl>
-              </VStack>
+                    Humor
+                  </FormLabel>
+                </Flex>
+                <NumberInput
+                  value={personalityTraits.humor}
+                  onChange={(_, value) =>
+                    setPersonalityTraits((prev) => ({
+                      ...prev,
+                      humor: value,
+                    }))
+                  }
+                  min={1}
+                  max={10}
+                  size="sm"
+                >
+                  <NumberInputField
+                    bg="white"
+                    borderColor={threadColors.thread2.borderColor}
+                    h="32px"
+                    fontSize="sm"
+                  />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper h="16px" />
+                    <NumberDecrementStepper h="16px" />
+                  </NumberInputStepper>
+                </NumberInput>
+              </FormControl>
 
               <Button
                 colorScheme={threadColors.thread2.buttonColor}
@@ -453,7 +445,7 @@ Adjust your responses based on these traits.`;
                 width="100%"
                 size="sm"
                 fontWeight="medium"
-                h="36px"
+                h="32px"
                 px={6}
                 borderRadius="full"
                 bg="white"
