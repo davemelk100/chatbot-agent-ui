@@ -27,6 +27,8 @@ This package requires the following peer dependencies:
 
 ## Usage
 
+### Basic Usage
+
 ```tsx
 import { EmbeddableChat } from "@agent-ui-lab/chatbot";
 
@@ -50,6 +52,42 @@ function App() {
 }
 ```
 
+### Using a Specific Chat Type
+
+```tsx
+// Use only the content feedback chat
+<EmbeddableChat
+  defaultChatType="content-feedback"
+  showChatSelector={false}
+  allowedChatTypes={["content-feedback"]}
+/>
+
+// Use only the personality tuning chat
+<EmbeddableChat
+  defaultChatType="personality-tuning"
+  showChatSelector={false}
+  allowedChatTypes={["personality-tuning"]}
+/>
+
+// Use only the three-way chat
+<EmbeddableChat
+  defaultChatType="three-way"
+  showChatSelector={false}
+  allowedChatTypes={["three-way"]}
+/>
+```
+
+### Allowing Multiple Chat Types
+
+```tsx
+// Allow users to switch between content feedback and personality tuning
+<EmbeddableChat
+  defaultChatType="content-feedback"
+  showChatSelector={true}
+  allowedChatTypes={["content-feedback", "personality-tuning"]}
+/>
+```
+
 ## Available Chat Types
 
 - `content-feedback`: A chat interface for providing feedback on content
@@ -58,12 +96,15 @@ function App() {
 
 ## Props
 
-| Prop            | Type                                                      | Default            | Description                           |
-| --------------- | --------------------------------------------------------- | ------------------ | ------------------------------------- |
-| apiKey          | string                                                    | -                  | Your OpenAI API key                   |
-| theme           | object                                                    | -                  | Custom theme configuration            |
-| defaultChatType | 'content-feedback' \| 'personality-tuning' \| 'three-way' | 'content-feedback' | The type of chat interface to display |
-| onError         | (error: Error) => void                                    | -                  | Error handler callback                |
+| Prop             | Type                                                      | Default            | Description                            |
+| ---------------- | --------------------------------------------------------- | ------------------ | -------------------------------------- |
+| apiKey           | string                                                    | -                  | Your OpenAI API key                    |
+| model            | string                                                    | 'gpt-4'            | The OpenAI model to use                |
+| theme            | object                                                    | -                  | Custom theme configuration             |
+| defaultChatType  | 'content-feedback' \| 'personality-tuning' \| 'three-way' | 'content-feedback' | The type of chat interface to display  |
+| onError          | (error: Error) => void                                    | -                  | Error handler callback                 |
+| showChatSelector | boolean                                                   | false              | Whether to show the chat type selector |
+| allowedChatTypes | ChatType[]                                                | all types          | Which chat types are available         |
 
 ## Theme Customization
 

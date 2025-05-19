@@ -1,37 +1,27 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import {
-  Box,
-  VStack,
-  Input,
-  Text,
-  Flex,
-  IconButton,
-  createStandaloneToast,
   ChakraProvider,
   extendTheme,
+  Select,
+  Box,
+  Text,
 } from "@chakra-ui/react";
-import { ChatIcon } from "@chakra-ui/icons";
-import { createChatCompletion } from "../services/openai";
-import type { ChatMessage } from "../services/openai";
-import { usePersonality } from "../context/PersonalityContext";
 import { ErrorBoundary } from "react-error-boundary";
 import ContentFeedbackChat from "./chatbots/ContentFeedbackChat";
 import PersonalityTuningChat from "./chatbots/PersonalityTuningChat";
 import ThreeWayChat from "./chatbots/ThreeWayChat";
 import { ConfigProvider } from "../context/ConfigContext";
 
-interface Message {
-  role: "user" | "assistant";
-  content: string;
-  model: string;
-}
+export type ChatType = "content-feedback" | "personality-tuning" | "three-way";
 
 export interface EmbeddableChatProps {
   apiKey?: string;
   model?: string;
   theme?: Record<string, any>;
-  defaultChatType?: "content-feedback" | "personality-tuning" | "three-way";
+  defaultChatType?: ChatType;
   onError?: (error: Error) => void;
+  showChatSelector?: boolean;
+  allowedChatTypes?: ChatType[];
 }
 
 function ErrorFallback({
@@ -56,8 +46,10 @@ export default function EmbeddableChat({
   theme,
   defaultChatType = "content-feedback",
   onError,
+  showChatSelector = false,
+  allowedChatTypes = ["content-feedback", "personality-tuning", "three-way"],
 }: EmbeddableChatProps) {
-  const [chatType, setChatType] = useState(defaultChatType);
+  const [chatType, setChatType] = useState<ChatType>(defaultChatType);
 
   // Extend the default theme with custom theme
   const customTheme = extendTheme(theme || {});
@@ -85,12 +77,39 @@ export default function EmbeddableChat({
       FallbackComponent={ErrorFallback}
       onError={handleError}
       onReset={() => {
-        // Reset the state here
         setChatType(defaultChatType);
       }}
     >
       <ConfigProvider apiKey={apiKey} model={model}>
-        <ChakraProvider theme={customTheme}>{renderChat()}</ChakraProvider>
+        <ChakraProvider theme={customTheme}>
+          <Box>
+            {showChatSelector && allowedChatTypes.length > 1 && (
+              <Box mb={4}>
+                <Text mb={2} fontSize="sm" fontWeight="medium">
+                  Select Chat Type:
+                </Text>
+                <Select
+                  value={chatType}
+                  onChange={(e) => setChatType(e.target.value as ChatType)}
+                  size="sm"
+                  width="200px"
+                >
+                  {allowedChatTypes.map((type) => (
+                    <option key={type} value={type}>
+                      {type
+                        .split("-")
+                        .map(
+                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                        )
+                        .join(" ")}
+                    </option>
+                  ))}
+                </Select>
+              </Box>
+            )}
+            {renderChat()}
+          </Box>
+        </ChakraProvider>
       </ConfigProvider>
     </ErrorBoundary>
   );
