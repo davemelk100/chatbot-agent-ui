@@ -16,7 +16,7 @@ yarn add @agent-ui-lab/chatbot
 
 ```bash
 # Clone the repository
-git clone https://github.com/agent-ui-lab/chatbot-agent-ui.git
+git clone https://github.com/davemelk100/chatbot-agent-ui.git
 
 # Navigate to the project directory
 cd chatbot-agent-ui

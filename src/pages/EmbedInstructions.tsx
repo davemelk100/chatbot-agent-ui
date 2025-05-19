@@ -190,7 +190,7 @@ function App() {
           <Text fontSize="sm" color="gray.500">
             For more detailed documentation, visit our{" "}
             <Link
-              href="https://github.com/agent-ui-lab/chatbot-agent-ui"
+              href="https://github.com/davemelk100/chatbot-agent-ui"
               isExternal
               color="blue.500"
             >

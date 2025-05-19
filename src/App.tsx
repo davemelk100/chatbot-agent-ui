@@ -33,10 +33,22 @@ function App() {
             p={4}
             borderBottom="1px"
             borderColor={borderColor}
-            justify="space-between"
+            justify="flex-start"
             align="center"
+            flexDirection="column"
           >
-            <Box>
+            <Text
+              fontSize="2xl"
+              fontWeight="bold"
+              textAlign="left"
+              mb={4}
+              color={textColor}
+              fontFamily={theme.fonts.heading.primary}
+              alignSelf="flex-start"
+            >
+              AI AGENT LAB
+            </Text>
+            <Box alignSelf="flex-start">
               <Link to="/">
                 <Button variant="ghost">Home</Button>
               </Link>
@@ -51,14 +63,6 @@ function App() {
               path="/"
               element={
                 <Box p={8}>
-                  <Text
-                    fontSize="2xl"
-                    fontWeight="bold"
-                    mb={6}
-                    color={textColor}
-                  >
-                    AI AGENT LAB
-                  </Text>
                   <Grid
                     templateColumns={{
                       base: "1fr",
@@ -86,7 +90,7 @@ function App() {
                     </GridItem>
 
                     <GridItem>
-                      <VStack align="stretch" spacing={4}>                        
+                      <VStack align="stretch" spacing={4}>
                         <Box
                           border="1px"
                           borderColor={borderColor}
