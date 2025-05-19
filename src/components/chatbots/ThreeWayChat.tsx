@@ -210,8 +210,8 @@ export default function ThreeWayChat() {
           <Text
             fontSize={{ base: "md", sm: "lg" }}
             fontWeight="medium"
-            {...threadStyles.thread1}
-            color={threadColors.thread1.textColor}
+            color="#3182ce"
+            {...threadStyles.thread3}
           >
             Three Way Chat
           </Text>

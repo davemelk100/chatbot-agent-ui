@@ -399,7 +399,9 @@ export default function ContentFeedbackChat() {
                     strokeWidth="0.5"
                   />
                 }
-                colorScheme={threadColors.thread3.buttonColor}
+                colorScheme="blue"
+                bg="#0369a1"
+                _hover={{ bg: "#075985" }}
                 onClick={handleSendMessage}
                 isLoading={isLoading}
                 size={{ base: "xs", sm: "sm", md: "md" }}
