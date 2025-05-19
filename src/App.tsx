@@ -7,19 +7,15 @@ import {
   GridItem,
   VStack,
   Flex,
-  Code,
   Button,
-  Collapse,
+  CSSReset,
 } from "@chakra-ui/react";
-import { ChevronDownIcon } from "@chakra-ui/icons";
-import { Suspense, useState } from "react";
-import { threadDescriptions } from "./config/textContent";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import EmbeddableChat from "./components/EmbeddableChat";
+import EmbedInstructions from "./pages/EmbedInstructions";
 import { theme } from "./config/designSystem";
-import { ChatInterface } from "./components/lazy";
-import { PersonalityProvider } from "./context/PersonalityContext";
 
 function App() {
-  const [showEmbedInstructions, setShowEmbedInstructions] = useState(false);
   const bgColor = useColorModeValue("white", "gray.800");
   const textColor = useColorModeValue(
     theme.colors.secondary[800],
@@ -28,209 +24,112 @@ function App() {
   const borderColor = useColorModeValue("gray.200", "gray.700");
 
   return (
-    <ChakraProvider theme={theme}>
-      <PersonalityProvider>
-        <Flex minH="100vh" bg={bgColor}>
-          {/* Main Content */}
-          <Box
-            flex="1"
-            p={{
-              base: theme.spacing.sm,
-              sm: theme.spacing.md,
-              md: theme.spacing.lg,
-            }}
-          >
-            <Box maxW="1600px" mx="auto" px={{ base: 2, sm: 4, md: 6 }}>
-              <Text
-                fontSize={{ base: "lg", sm: "xl", md: "2xl" }}
-                color={textColor}
-                opacity={0.7}
-                fontFamily="Avenir"
-                fontWeight="semibold"
-                mt={{ base: "16px", sm: "20px" }}
-                mb={{ base: "16px", sm: "20px" }}
-              >
-                AGENT UI LAB
-              </Text>
-              <Box mb={6}>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() =>
-                    setShowEmbedInstructions(!showEmbedInstructions)
-                  }
-                  fontFamily="Roboto"
-                  mb={2}
-                  rightIcon={
-                    <ChevronDownIcon
-                      transform={
-                        showEmbedInstructions ? "rotate(180deg)" : "none"
-                      }
-                      transition="transform 0.2s"
-                    />
-                  }
-                >
-                  {showEmbedInstructions
-                    ? "Hide Embed Instructions"
-                    : "Show Embed Instructions (Beta)"}
-                </Button>
-
-                <Collapse in={showEmbedInstructions}>
-                  <Box
-                    p={4}
-                    bg={bgColor}
-                    borderRadius="lg"
-                    borderWidth="1px"
-                    borderColor={borderColor}
-                    mb={4}
-                  >
-                    <VStack align="stretch" spacing={4}>
-                      <Text
-                        fontSize="sm"
-                        fontWeight="medium"
-                        fontFamily="Roboto"
-                      >
-                        To embed this chat interface in your application:
-                      </Text>
-
-                      <Box>
-                        <Text fontSize="sm" mb={1} fontFamily="Roboto">
-                          1. Install the package:
-                        </Text>
-                        <Code
-                          p={2}
-                          borderRadius="md"
-                          fontSize="sm"
-                          display="block"
-                          whiteSpace="pre"
-                        >
-                          {`npm install chatbot-agent-ui`}
-                        </Code>
-                      </Box>
-
-                      <Box>
-                        <Text fontSize="sm" mb={1} fontFamily="Roboto">
-                          2. Import the component:
-                        </Text>
-                        <Code
-                          p={2}
-                          borderRadius="md"
-                          fontSize="sm"
-                          display="block"
-                          whiteSpace="pre"
-                        >
-                          {`import { EmbeddableChat } from 'chatbot-agent-ui';`}
-                        </Code>
-                      </Box>
-
-                      <Box>
-                        <Text fontSize="sm" mb={1} fontFamily="Roboto">
-                          3. Use in your app:
-                        </Text>
-                        <Code
-                          p={2}
-                          borderRadius="md"
-                          fontSize="sm"
-                          display="block"
-                          whiteSpace="pre"
-                        >
-                          {`<EmbeddableChat
-  apiKey="your-openai-api-key"  // Optional if using environment variable
-  model="gpt-3.5-turbo"         // Optional, defaults to gpt-3.5-turbo
-  initialMessage="Hello! How can I help you today?"  // Optional
-  width="400px"                 // Optional, defaults to 100%
-  height="600px"               // Optional, defaults to 500px
-  position="bottom-right"      // Optional, defaults to bottom-right
-  theme={{                     // Optional
-    primaryColor: "#3182CE",
-    backgroundColor: "#FFFFFF",
-    textColor: "#000000",
-    userMessageBg: "#3182CE",
-    assistantMessageBg: "#F7FAFC"
-  }}
-/>`}
-                        </Code>
-                      </Box>
-
-                      <Box>
-                        <Text fontSize="sm" mb={1} fontFamily="Roboto">
-                          4. Set up environment variable (optional):
-                        </Text>
-                        <Code
-                          p={2}
-                          borderRadius="md"
-                          fontSize="sm"
-                          display="block"
-                          whiteSpace="pre"
-                        >
-                          {`VITE_OPENAI_API_KEY=your-openai-api-key`}
-                        </Code>
-                      </Box>
-
-                      <Box>
-                        <Text fontSize="sm" mb={1} fontFamily="Roboto">
-                          5. Wrap your app with ChakraProvider:
-                        </Text>
-                        <Code
-                          p={2}
-                          borderRadius="md"
-                          fontSize="sm"
-                          display="block"
-                          whiteSpace="pre"
-                        >
-                          {`import { ChakraProvider } from '@chakra-ui/react'
-
-function App() {
-  return (
     <ChakraProvider>
-      <YourApp />
-    </ChakraProvider>
-  )
-}`}
-                        </Code>
-                      </Box>
-                    </VStack>
-                  </Box>
-                </Collapse>
-              </Box>
-              <Grid
-                templateColumns={{
-                  base: "1fr",
-                  sm: "repeat(2, 1fr)",
-                  lg: "repeat(3, 1fr)",
-                }}
-                gap={{ base: 4, sm: 6 }}
-              >
-                {[0, 1, 2].map((threadId) => (
-                  <GridItem key={threadId}>
-                    <Box mb={{ base: theme.spacing.sm, sm: theme.spacing.md }}>
-                      <Text
-                        fontSize={{ base: "md", sm: "lg" }}
-                        color={textColor}
-                        mb={{ base: theme.spacing.xs, sm: theme.spacing.xs }}
-                        fontFamily={theme.fonts.heading.primary}
-                        fontWeight="medium"
-                      >
-                        {threadDescriptions[threadId].title}
-                      </Text>
-                      <Text
-                        fontSize={{ base: "sm", sm: "md" }}
-                        color={theme.colors.secondary[600]}
-                        fontFamily={theme.fonts.body.primary}
-                      >
-                        {threadDescriptions[threadId].description}
-                      </Text>
-                    </Box>
-                    <Suspense fallback={<div>Loading...</div>}>
-                      <ChatInterface threadId={threadId} />
-                    </Suspense>
-                  </GridItem>
-                ))}
-              </Grid>
+      <CSSReset />
+      <Router>
+        <Box minH="100vh" bg={bgColor}>
+          <Flex
+            as="nav"
+            p={4}
+            borderBottom="1px"
+            borderColor={borderColor}
+            justify="space-between"
+            align="center"
+          >
+            <Box>
+              <Link to="/">
+                <Button variant="ghost">Home</Button>
+              </Link>
+              <Link to="/embed">
+                <Button variant="ghost">Embed Instructions</Button>
+              </Link>
             </Box>
-          </Box>
-        </Flex>
-      </PersonalityProvider>
+          </Flex>
+
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Box p={8}>
+                  <Text
+                    fontSize="2xl"
+                    fontWeight="bold"
+                    mb={6}
+                    color={textColor}
+                  >
+                    AI AGENT LAB
+                  </Text>
+                  <Grid
+                    templateColumns={{
+                      base: "1fr",
+                      md: "repeat(3, 1fr)",
+                    }}
+                    gap={6}
+                  >
+                    <GridItem>
+                      <VStack align="stretch" spacing={4}>
+                        <Box
+                          border="1px"
+                          borderColor={borderColor}
+                          borderRadius="md"
+                          p={4}
+                          bg={bgColor}
+                          h="600px"
+                        >
+                          <EmbeddableChat
+                            defaultChatType="content-feedback"
+                            showChatSelector={false}
+                            allowedChatTypes={["content-feedback"]}
+                          />
+                        </Box>
+                      </VStack>
+                    </GridItem>
+
+                    <GridItem>
+                      <VStack align="stretch" spacing={4}>                        
+                        <Box
+                          border="1px"
+                          borderColor={borderColor}
+                          borderRadius="md"
+                          p={4}
+                          bg={bgColor}
+                          h="600px"
+                        >
+                          <EmbeddableChat
+                            defaultChatType="personality-tuning"
+                            showChatSelector={false}
+                            allowedChatTypes={["personality-tuning"]}
+                          />
+                        </Box>
+                      </VStack>
+                    </GridItem>
+
+                    <GridItem>
+                      <VStack align="stretch" spacing={4}>
+                        <Box
+                          border="1px"
+                          borderColor={borderColor}
+                          borderRadius="md"
+                          p={4}
+                          bg={bgColor}
+                          h="600px"
+                        >
+                          <EmbeddableChat
+                            defaultChatType="three-way"
+                            showChatSelector={false}
+                            allowedChatTypes={["three-way"]}
+                          />
+                        </Box>
+                      </VStack>
+                    </GridItem>
+                  </Grid>
+                </Box>
+              }
+            />
+            <Route path="/embed" element={<EmbedInstructions />} />
+          </Routes>
+        </Box>
+      </Router>
     </ChakraProvider>
   );
 }

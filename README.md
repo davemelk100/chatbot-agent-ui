@@ -4,10 +4,40 @@ A customizable, embeddable chatbot component built with React and Chakra UI.
 
 ## Installation
 
+### Option 1: Install from npm
+
 ```bash
 npm install @agent-ui-lab/chatbot
 # or
 yarn add @agent-ui-lab/chatbot
+```
+
+### Option 2: Clone from GitHub
+
+```bash
+# Clone the repository
+git clone https://github.com/agent-ui-lab/chatbot-agent-ui.git
+
+# Navigate to the project directory
+cd chatbot-agent-ui
+
+# Install dependencies
+npm install
+# or
+yarn install
+
+# Build the package
+npm run build
+# or
+yarn build
+```
+
+### Environment Setup
+
+Create a `.env` file in your project root:
+
+```env
+VITE_OPENAI_API_KEY=your_openai_api_key_here
 ```
 
 ## Peer Dependencies
@@ -138,6 +168,25 @@ The component includes built-in error boundaries and will display a fallback UI 
     console.error("Chatbot error:", error);
   }}
 />
+```
+
+## Development
+
+```bash
+# Start development server
+npm run dev
+# or
+yarn dev
+
+# Run tests
+npm test
+# or
+yarn test
+
+# Build for production
+npm run build
+# or
+yarn build
 ```
 
 ## License
